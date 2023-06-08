@@ -1,4 +1,4 @@
-﻿namespace TonightPerfume.Domain.Viewmodels.User
+﻿namespace TonightPerfume.Domain.Viewmodels.UserVM
 {
     public class LoginViewmodel
     {

@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TonightPerfume.Data\TonightPerfume.Data.csproj" />
     <ProjectReference Include="..\TonightPerfume.Domain\TonightPerfume.Domain.csproj" />
   </ItemGroup>

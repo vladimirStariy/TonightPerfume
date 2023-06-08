@@ -1,33 +1,45 @@
-﻿using TonightPerfume.Data.Repository.BaseRepository;
+﻿using Microsoft.EntityFrameworkCore;
+using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Domain.Models.Product;
 
 namespace TonightPerfume.Data.Repository.ProductR
 {
     public class ProductRepository : IRepository<Product>
     {
-        public Task Create(Product model)
+        private readonly ApplicationDbContext _db;
+
+        public ProductRepository(ApplicationDbContext db)
         {
-            throw new NotImplementedException();
+            _db = db;
         }
 
-        public Task Delete(Product model)
+        public async Task Create(Product model)
         {
-            throw new NotImplementedException();
+            await _db.Products.AddAsync(model);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task Delete(Product model)
+        {
+            _db.Products.Remove(model);
+            await _db.SaveChangesAsync();
         }
 
         public IQueryable<Product> Get()
         {
-            throw new NotImplementedException();
+            return _db.Products;
         }
 
         public Task<Product> GetById(uint id)
         {
-            throw new NotImplementedException();
+            return _db.Products.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
-        public Task<Product> Update(Product model)
+        public async Task<Product> Update(Product model)
         {
-            throw new NotImplementedException();
+            _db.Products.Update(model);
+            await _db.SaveChangesAsync();
+            return model;
         }
     }
 }

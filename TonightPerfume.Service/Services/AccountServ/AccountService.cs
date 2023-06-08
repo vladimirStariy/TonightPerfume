@@ -2,9 +2,9 @@
 using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Domain.Models.User;
 using TonightPerfume.Domain.Response;
-using TonightPerfume.Domain.Viewmodels.User;
+using TonightPerfume.Domain.Viewmodels.UserVM;
 
-namespace TonightPerfume.Service.User
+namespace TonightPerfume.Service.Services.AccountServ
 {
     public class AccountService : IAccountService
     {

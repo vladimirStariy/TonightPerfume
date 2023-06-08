@@ -1,8 +1,8 @@
 ﻿using System.Security.Claims;
 using TonightPerfume.Domain.Response;
-using TonightPerfume.Domain.Viewmodels.User;
+using TonightPerfume.Domain.Viewmodels.UserVM;
 
-namespace TonightPerfume.Service.User
+namespace TonightPerfume.Service.Services.AccountServ
 {
     public interface IAccountService
     {

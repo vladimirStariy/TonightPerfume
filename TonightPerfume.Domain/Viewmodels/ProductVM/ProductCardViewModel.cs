@@ -1,6 +1,6 @@
-﻿namespace TonightPerfume.Domain.Models.Product
+﻿namespace TonightPerfume.Domain.Viewmodels.ProductVM
 {
-    public class Product
+    public class ProductCardViewModel
     {
         public uint Id { get; set; }
         public string Name { get; set; }

@@ -41,6 +41,27 @@ namespace TonightPerfume.Data
                     Password = "User3"
                 });
             });
+            modelBuilder.Entity<Product>(builder =>
+            {
+                builder.ToTable("Products").HasKey(x => x.Id);
+                builder.Property(x => x.Id).ValueGeneratedOnAdd();
+
+                builder.HasData(new Product
+                {
+                    Id = 1,
+                    Name = "Product1"
+                });
+                builder.HasData(new Product
+                {
+                    Id = 2,
+                    Name = "Product2"
+                });
+                builder.HasData(new Product
+                {
+                    Id = 3,
+                    Name = "Product3"
+                });
+            });
         }
     }
 }

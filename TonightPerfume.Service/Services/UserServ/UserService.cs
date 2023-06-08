@@ -1,7 +1,7 @@
 ﻿using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Domain.Models.User;
 
-namespace TonightPerfume.Service.User
+namespace TonightPerfume.Service.Services.UserServ
 {
     public class UserService : IUserService
     {
