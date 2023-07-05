@@ -17,5 +17,7 @@ namespace TonightPerfume.Client.Controllers
             var response = _productService.GetProductCards();
             return View(response.Result);
         }
+
+        public IActionResult PreviewPage() => View();
     }
 }

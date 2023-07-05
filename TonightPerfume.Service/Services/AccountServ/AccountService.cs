@@ -15,7 +15,7 @@ namespace TonightPerfume.Service.Services.AccountServ
             _userRepository = userRepository;
         }
 
-        public Task<Response<ClaimsIdentity>> Login(LoginViewmodel model)
+        public Task<Response<ClaimsIdentity>> Login(LoginDto model)
         {
             throw new NotImplementedException();
         }

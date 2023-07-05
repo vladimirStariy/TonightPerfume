@@ -6,6 +6,6 @@ namespace TonightPerfume.Service.Services.AccountServ
 {
     public interface IAccountService
     {
-        Task<Response<ClaimsIdentity>> Login(LoginViewmodel model);
+        Task<Response<ClaimsIdentity>> Login(LoginDto model);
     }
 }
