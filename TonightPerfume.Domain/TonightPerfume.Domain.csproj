@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -8,11 +8,9 @@
 
   <ItemGroup>
     <PackageReference Include="JWT" Version="10.0.2" />
-    <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="7.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="6.0.19" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.31.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.21.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
   </ItemGroup>
 
 </Project>

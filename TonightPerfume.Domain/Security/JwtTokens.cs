@@ -1,96 +1,100 @@
-﻿using JWT.Algorithms;
-using JWT.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using TonightPerfume.Domain.Models.User;
+using System.Security.Cryptography;
+using System.Text;
+using TonightPerfume.Domain.Models;
 
 namespace TonightPerfume.Domain.Security
 {
     public static class JwtTokens
     {
-        public static List<Claim> CreateClaims(BaseUser user)
+        public static IEnumerable<Claim> CreateUserClaims(BaseUser user)
         {
             var claims = new List<Claim>(new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-                new Claim(JwtRegisteredClaimNames.Name, user.Username)
+                new Claim(JwtRegisteredClaimNames.Name, user.Username),
+                new Claim(JwtRegisteredClaimNames.Jti, user.User_ID.ToString())
             });
 
             return claims;
         }
 
-        public static JwtSecurityToken CreateJwtToken(List<Claim> claims)
+        public static JwtSecurityToken CreateJwtToken(IEnumerable<Claim> claims, string tokenType)
         {
             return new JwtSecurityToken(
                     issuer: SecurityConfig.ISSUER,
                     audience: SecurityConfig.AUDIENCE,
                     claims: claims,
-                    expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(5)),
-                    signingCredentials: new SigningCredentials(SecurityConfig.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+                    expires: tokenType == "access" ? DateTime.UtcNow.AddHours(1) : DateTime.UtcNow.AddDays(30),
+                    signingCredentials: new SigningCredentials
+                    (
+                        tokenType == "access" ? SecurityConfig.GetSymmetricAccessKey() : SecurityConfig.GetSymmetricRefreshKey(), 
+                        SecurityAlgorithms.HmacSha256
+                    ));
         }
 
-        //public static object GetValueFromPayload(IHeaderDictionary headers, string key)
-        //{
-        //    StringValues jwtToken;
-        //    headers.TryGetValue("Authorization", out jwtToken);
-        //    var payload = GetPayloadFromToken(jwtToken);
-        //    return payload[key];
-        //}
+        public static string CreateRefreshToken()
+        {
+            var randomNumber = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
 
-        //public static object GetValueFromPayload(string accessToken, string key)
-        //{
-        //    var payload = GetPayloadFromToken("Bearer " + accessToken);
-        //    return payload[key];
-        //}
+        public static Dictionary<string, string> GeneratePairTokens(BaseUser user)
+        {
+            var claims = CreateUserClaims(user);
+            var accessJwt = CreateJwtToken(claims, "access");
+            var refreshJwt = CreateJwtToken(claims, "refresh");
+            var accessToken = new JwtSecurityTokenHandler().WriteToken(accessJwt);
+            var refreshToken = new JwtSecurityTokenHandler().WriteToken(refreshJwt);
+            return new Dictionary<string, string>
+            {
+                { "refreshToken", refreshToken },
+                { "accessToken", accessToken },
+            };
+        }
 
-        //private static IDictionary<string, object> GetPayloadFromToken(string token)
-        //{
-        //    return new JwtBuilder()
-        //        .WithAlgorithm(new HMACSHA256Algorithm())
-        //        .WithSecret(SecurityConfig.KEY)
-        //        .MustVerifySignature()
-        //        .Decode<IDictionary<string, object>>(token.Split()[1]);
-        //}
+        public static object GetValueFromPayload(ClaimsPrincipal principal, string key)
+        {
+            try
+            {
+                var claims = principal.Claims;
+                if(claims != null)
+                {
+                    return claims.Where(x => x.Type == key).Select(x => x.Value).FirstOrDefault();
+                }
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
-        //private static string CreateAccessToken(BaseUser user)
-        //{
-        //    var payload = GetUserData(user);
-        //    return CreateJwtToken(SecurityConfig.ACCES_TOKEN_LIFETIME, payload);
-        //}
+        public static ClaimsPrincipal? ValidateToken(string? token, string type)
+        {
+            var tokenValidationParameters = new TokenValidationParameters();
+            if (type == "access")
+                tokenValidationParameters = SecurityConfig.GetValidationParameters();
+            else
+                tokenValidationParameters = SecurityConfig.GetRefreshValidationParameters();
 
-        //public static Dictionary<string, object> GetUserData(BaseUser user)
-        //{
-        //    var payload = new Dictionary<string, object>
-        //    {
-        //        { "user_name", user.Username },
-        //        { "userId", user.User_ID }
-        //        //,
-        //        //{ "email_active", user.EmailValidate },
-        //        //{ "phone_active", user.NumberValidate },
-        //        //{ "email", user.Email },
-        //        //{ "defaultAccount", childUser != null ? childUser.DefaultAccount : false },
-        //        //{ "phone", user.PhoneNumber },
-        //        //{ "perms", perms },
-        //        //{ "avatar",  childUser != null ? childUser.Avatar : user.Avatar },
-        //        //{ "userType", childUser != null ? childUser.GetType().Name : user.GetType().Name },
-        //        //{ "userData", childUser != null ? JsonConvert.SerializeObject(childUser) : "" },
-        //    };
-        //    return payload;
-        //}
-
-        //private static string CreateJwtToken(int lifetime, Dictionary<string, object> payload = null)
-        //{
-        //    if (payload == null)
-        //        payload = new Dictionary<string, object>();
-        //    return new JwtBuilder()
-        //        .WithAlgorithm(new HMACSHA256Algorithm())
-        //        .WithSecret(SecurityConfig.KEY)
-        //        .AddClaims(payload)
-        //        .AddClaim("exp", DateTimeOffset.UtcNow.AddSeconds(lifetime).ToUnixTimeSeconds())
-        //        .Encode();
-        //}
+            var tokenHandler = new JwtSecurityTokenHandler();
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+                if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                    throw new SecurityTokenException("Invalid token");
+                return principal;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }

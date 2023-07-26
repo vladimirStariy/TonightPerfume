@@ -8,7 +8,22 @@ using TonightPerfume.Domain.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DesktopLocalPolicy", builder => builder
+                       .WithOrigins("https://localhost:3000")
+                       .AllowAnyHeader()
+                       .AllowAnyMethod()
+                       .AllowCredentials());
+    options.AddPolicy("MobileLocalPolicy", builder => builder
+                       .WithOrigins("https://192.168.100.4:3000")
+                       .AllowAnyHeader()
+                       .AllowAnyMethod());
+    options.AddPolicy("AllowAllPolicy", builder => builder
+                       .AllowAnyOrigin()
+                       .AllowAnyHeader()
+                       .AllowAnyMethod());
+});
 
 builder.Services.AddControllers();
 
@@ -18,7 +33,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
          /*.UseLazyLoadingProxies()*/
 );
 
-
 builder.Services.InitializeRepositories();
 builder.Services.InitializeServices();
 
@@ -26,60 +40,53 @@ builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
     })
     .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            // указывает, будет ли валидироваться издатель при валидации токена
-            ValidateIssuer = true,
-            // строка, представляющая издателя
-            ValidIssuer = SecurityConfig.ISSUER,
-            // будет ли валидироваться потребитель токена
-            ValidateAudience = true,
-            // установка потребителя токена
-            ValidAudience = SecurityConfig.AUDIENCE,
-            // будет ли валидироваться время существования
-            ValidateLifetime = true,
-            // установка ключа безопасности
-            IssuerSigningKey = SecurityConfig.GetSymmetricSecurityKey(),
-            // валидация ключа безопасности
-            ValidateIssuerSigningKey = true,
-        };
+        options.IncludeErrorDetails = true;
+        options.TokenValidationParameters = SecurityConfig.GetValidationParameters();
+
+        //new TokenValidationParameters
+        //{
+        //    ValidateIssuer = true,
+        //    ValidIssuer = SecurityConfig.ISSUER,
+        //    ValidateAudience = true,
+        //    ValidAudience = SecurityConfig.AUDIENCE,
+        //    ValidateLifetime = true,
+        //    IssuerSigningKey = SecurityConfig.GetSymmetricAccessKey(),
+        //    ValidateIssuerSigningKey = true
+        //};
     });
 
-var securityScheme = new OpenApiSecurityScheme()
-{
-    Name = "Authorization",
-    Type = SecuritySchemeType.ApiKey,
-    Scheme = "Bearer",
-    BearerFormat = "JWT",
-    In = ParameterLocation.Header,
-    Description = "JSON Web Token based security",
-};
-
-var securityReq = new OpenApiSecurityRequirement()
-{
-    {
-        new OpenApiSecurityScheme
-        {
-            Reference = new OpenApiReference
-            {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
-            }
-        },
-        new string[] {}
-    }
-};
-
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-//(opt =>
-//{
-//    opt.AddSecurityDefinition("Bearer", securityScheme);
-//    opt.AddSecurityRequirement(securityReq);
-//});
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
 
 var app = builder.Build();
 
@@ -92,14 +99,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(builder => {
-    builder.AllowAnyOrigin();
-    builder.AllowAnyHeader();
-    builder.AllowAnyMethod();
-});
+app.UseCors("DesktopLocalPolicy");
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
+
 
 app.MapControllers();
 

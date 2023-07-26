@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using System;
-using TonightPerfume.Domain.Models.Product;
+using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Viewmodels.ProductVM;
 
 namespace TonightPerfume.Service.AutoMapper

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Domain.Enum;
-using TonightPerfume.Domain.Models.Product;
+using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;
 using TonightPerfume.Domain.Viewmodels.ProductVM;
 

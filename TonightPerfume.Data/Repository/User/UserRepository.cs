@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TonightPerfume.Data.Repository.BaseRepository;
-using TonightPerfume.Domain.Models.User;
+using TonightPerfume.Domain.Models;
 
 namespace TonightPerfume.Data.Repository.User
 {

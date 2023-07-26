@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TonightPerfume.Data.Repository.BaseRepository;
-using TonightPerfume.Domain.Models.Product;
+using TonightPerfume.Domain.Models;
 
 namespace TonightPerfume.Data.Repository.ProductR
 {
@@ -30,9 +30,9 @@ namespace TonightPerfume.Data.Repository.ProductR
             return _db.Products;
         }
 
-        public Task<Product> GetById(uint id)
+        public async Task<Product> GetById(uint id)
         {
-            return _db.Products.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await _db.Products.Where(x => x.Product_ID == id).FirstOrDefaultAsync();
         }
 
         public async Task<Product> Update(Product model)

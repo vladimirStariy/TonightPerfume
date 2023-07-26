@@ -25,28 +25,56 @@ namespace TonightPerfume.Domain.Security
         /// </summary>
         //public const int RESTORE_PASSWORD_RESEND_TIMEOUT = 1800; // 30 минут
 
-        /// <summary>
-        /// Время жизни access токена
-        /// </summary>
-        //public const int ACCES_TOKEN_LIFETIME = 3600; //3600
+        
 
         //public const string ANALYTICS_TOKEN = "5b52d3ac-ec10-45ef-9f1a-02426a4de096";
 
-        /// <summary>
-        /// Время жизни refresh токена
-        /// </summary>
-        //public const int REFRESH_TOKEN_LIFETIME = 5184000; // 60 дней
+        public static TokenValidationParameters GetValidationParameters()
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = ISSUER,
+                ValidateAudience = true,
+                ValidAudience = AUDIENCE,
+                ValidateLifetime = true,
+                IssuerSigningKey = GetSymmetricAccessKey(),
+                ValidateIssuerSigningKey = true
+            };
+            
+            return tokenValidationParameters;
+        }
 
-        /// <summary>
-        /// Секретный ключ для генерации jwt токенов
-        /// </summary>
-        internal const string KEY = "yCAR8jCVJATVN6rSKvqxur7UeCVzHaZCD3THYLuEzHWkuAwVkNeXvbCcy3RUPKVpx5vcE2mZ2kvBV35jkpjzjbPuge44yqP42JFknNmsRnqzgfBbBzURQUzjThafktmJbNew2UjqXfXcLu5t6Xgp4JugnyW2yScBneYCfWwpXyHktTC4RUPkKz33x77HnATsPeGkhKu4yGrMFQjjBrpdUpe6PmzdTqpn5q5BKS3E7VxM5UBBMhYGrhau3S9pWpjT";
+        public static TokenValidationParameters GetRefreshValidationParameters()
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = ISSUER,
+                ValidateAudience = true,
+                ValidAudience = AUDIENCE,
+                ValidateLifetime = true,
+                IssuerSigningKey = GetSymmetricRefreshKey(),
+                ValidateIssuerSigningKey = true
+            };
 
-        public const string ISSUER = "MyAuthServer"; // издатель токена
+            return tokenValidationParameters;
+        }
+
+        public const int REFRESH_TOKEN_LIFETIME = 5184000; // 60 дней
+        public const int ACCES_TOKEN_LIFETIME = 1800; //3600
+
+        internal const string ACCESS_KEY = "EiVyJh3gGYUfN2XfNe+U5OBdtri10iH56OHicjzufMqoZbfDxZWlB1LSOHVS3bCC";        
+
+        internal const string REFRESH_KEY = "cGgZVjavLKIXWAtbW7NjA4QdShmz48fy7aJ90+hh8G1p0SkFmrDkpULgnZRlBdku";
+
+        public const string ISSUER = "https://localhost:7226"; // издатель токена
         public const string AUDIENCE = "MyAuthClient"; // потребитель токена
 
-        public static SymmetricSecurityKey GetSymmetricSecurityKey() =>
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(KEY));
+        public static SymmetricSecurityKey GetSymmetricAccessKey() =>
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ACCESS_KEY));
+        public static SymmetricSecurityKey GetSymmetricRefreshKey() =>
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(REFRESH_KEY));
     }
 
 
