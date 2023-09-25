@@ -1,4 +1,5 @@
 ﻿using TonightPerfume.Data.Repository.BaseRepository;
+using TonightPerfume.Data.Repository.ProductR;
 using TonightPerfume.Domain.Enum;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;
@@ -6,30 +7,30 @@ using TonightPerfume.Service.Services.ProductServ.Interfaces;
 
 namespace TonightPerfume.Service.Services.ProductServ.Implementations
 {
-    public class BrandService : IBrandService
+    public class AromaGroupService : IAromaGroupService
     {
-        private readonly IRepository<Brand> _brandRepository;
+        private readonly IRepository<AromaGroup> _aromaGroupRepository;
 
-        public BrandService(IRepository<Brand> brandRepository)
+        public AromaGroupService(IRepository<AromaGroup> aromaGroupRepository)
         {
-            _brandRepository = brandRepository;
+            _aromaGroupRepository = aromaGroupRepository;
         }
 
-        public async Task<IBaseResponce<Brand>> Create(Brand model)
+        public async Task<IBaseResponce<AromaGroup>> Create(AromaGroup model)
         {
             try
             {
-                await _brandRepository.Create(model);
-                return new Response<Brand>()
+                await _aromaGroupRepository.Create(model);
+                return new Response<AromaGroup>()
                 {
                     Result = model,
-                    Description = "Пользователь добавлен",
+                    Description = "Объект добавлен",
                     StatusCode = StatusCode.OK
                 };
             }
             catch (Exception ex)
             {
-                return new Response<Brand>()
+                return new Response<AromaGroup>()
                 {
                     StatusCode = StatusCode.InternalServerError,
                     Description = $"Внутренняя ошибка: {ex.Message}"
@@ -37,31 +38,31 @@ namespace TonightPerfume.Service.Services.ProductServ.Implementations
             }
         }
 
-        public async Task<IBaseResponce<List<Brand>>> Get()
+        public async Task<IBaseResponce<List<AromaGroup>>> Get()
         {
             try
             {
-                var brands = _brandRepository.Get();
+                var aromaGroups = _aromaGroupRepository.Get();
 
-                if (!brands.Any())
+                if (!aromaGroups.Any())
                 {
-                    return new Response<List<Brand>>()
+                    return new Response<List<AromaGroup>>()
                     {
                         Description = "Not found",
                         StatusCode = StatusCode.OK
                     };
                 }
 
-                return new Response<List<Brand>>()
+                return new Response<List<AromaGroup>>()
                 {
-                    Result = brands.ToList(),
+                    Result = aromaGroups.ToList(),
                     Description = "Объект добавлен",
                     StatusCode = StatusCode.OK
                 };
             }
             catch (Exception ex)
             {
-                return new Response<List<Brand>>()
+                return new Response<List<AromaGroup>>()
                 {
                     StatusCode = StatusCode.InternalServerError,
                     Description = $"Внутренняя ошибка: {ex.Message}"
@@ -69,31 +70,31 @@ namespace TonightPerfume.Service.Services.ProductServ.Implementations
             }
         }
 
-        public async Task<IBaseResponce<List<Brand>>> GetSomeBrands(int count)
+        public async Task<IBaseResponce<List<AromaGroup>>> GetSomeGroups(int count)
         {
             try
             {
-                var brands = _brandRepository.Get().ToList().OrderBy(x => x.Name).Take(count);
+                var aromaGroups = _aromaGroupRepository.Get().ToList().OrderBy(x => x.AromaGroup_Name).Take(count);
 
-                if (!brands.Any())
+                if (!aromaGroups.Any())
                 {
-                    return new Response<List<Brand>>()
+                    return new Response<List<AromaGroup>>()
                     {
                         Description = "Not found",
                         StatusCode = StatusCode.OK
                     };
                 }
 
-                return new Response<List<Brand>>()
+                return new Response<List<AromaGroup>>()
                 {
-                    Result = brands.ToList(),
+                    Result = aromaGroups.ToList(),
                     Description = "Объект добавлен",
                     StatusCode = StatusCode.OK
                 };
             }
             catch (Exception ex)
             {
-                return new Response<List<Brand>>()
+                return new Response<List<AromaGroup>>()
                 {
                     StatusCode = StatusCode.InternalServerError,
                     Description = $"Внутренняя ошибка: {ex.Message}"

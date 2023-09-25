@@ -7,5 +7,6 @@ namespace TonightPerfume.Service.Services.ProductServ.Interfaces
     {
         Task<IBaseResponce<Brand>> Create(Brand model);
         Task<IBaseResponce<List<Brand>>> Get();
+        Task<IBaseResponce<List<Brand>>> GetSomeBrands(int count);
     }
 }

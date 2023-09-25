@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TonightPerfume.Domain.Models;
+using TonightPerfume.Service.Services.ProductServ.Implementations;
 using TonightPerfume.Service.Services.ProductServ.Interfaces;
 
 namespace TonightPerfume.API.Controllers
 {
-    [Route("[controller]")]
+    [Route("")]
     [ApiController]
     public class PerfumeNoteController : ControllerBase
     {
@@ -14,6 +15,14 @@ namespace TonightPerfume.API.Controllers
         public PerfumeNoteController(IPerfumeNoteService perfumeNoteService)
         {
             _perfumeNoteService = perfumeNoteService;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("notes")]
+        public async Task<List<PerfumeNote>> Get()
+        {
+            var response = await _perfumeNoteService.Get();
+            return response.Result;
         }
 
         [AllowAnonymous]

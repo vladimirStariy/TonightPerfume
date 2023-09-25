@@ -26,7 +26,7 @@ namespace TonightPerfume.Data.Repository.ProductR
 
         public IEnumerable<PerfumeNote> Get()
         {
-            throw new NotImplementedException();
+            return _db.PerfumeNotes;
         }
 
         public async Task<PerfumeNote> GetById(uint id)

@@ -5,7 +5,7 @@ using TonightPerfume.Service.Services.ProductServ.Interfaces;
 
 namespace TonightPerfume.API.Controllers
 {
-    [Route("[controller]")]
+    [Route("")]
     [ApiController]
     public class CategoryController : ControllerBase
     {
@@ -14,6 +14,14 @@ namespace TonightPerfume.API.Controllers
         public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("categories")]
+        public async Task<List<Category>> Get()
+        {
+            var response = await _categoryService.Get();
+            return response.Result;
         }
 
         [AllowAnonymous]

@@ -25,6 +25,14 @@ namespace TonightPerfume.API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("filter-brands")]
+        public async Task<List<Brand>> GetSomeBrands(int count)
+        {
+            var response = await _brandService.GetSomeBrands(count);
+            return response.Result;
+        }
+
+        [AllowAnonymous]
         [HttpPost("create-brand")]
         public async Task<Brand> Create(Brand model)
         {

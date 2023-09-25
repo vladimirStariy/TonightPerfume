@@ -3,37 +3,37 @@ using TonightPerfume.Domain.Models;
 
 namespace TonightPerfume.Data.Repository.ProductR
 {
-    public class CategoryRepository : IRepository<Category>
+    public class AromaGroupRepository : IRepository<AromaGroup>
     {
         private readonly ApplicationDbContext _db;
 
-        public CategoryRepository(ApplicationDbContext db)
+        public AromaGroupRepository(ApplicationDbContext db)
         {
             _db = db;
         }
 
-        public async Task Create(Category model)
+        public async Task Create(AromaGroup model)
         {
-            await _db.Categories.AddAsync(model);
+            await _db.AromaGroups.AddAsync(model);
             await _db.SaveChangesAsync();
         }
 
-        public Task Delete(Category model)
+        public Task Delete(AromaGroup model)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Category> Get()
+        public IEnumerable<AromaGroup> Get()
         {
-            return _db.Categories;
+            return _db.AromaGroups;
         }
 
-        public Task<Category> GetById(uint id)
+        public Task<AromaGroup> GetById(uint id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Category> Update(Category model)
+        public Task<AromaGroup> Update(AromaGroup model)
         {
             throw new NotImplementedException();
         }

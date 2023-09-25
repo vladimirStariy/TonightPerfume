@@ -1,4 +1,5 @@
 ﻿using TonightPerfume.Data.Repository.BaseRepository;
+using TonightPerfume.Data.Repository.ProductR;
 using TonightPerfume.Domain.Enum;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;
@@ -30,6 +31,38 @@ namespace TonightPerfume.Service.Services.ProductServ.Implementations
             catch (Exception ex)
             {
                 return new Response<PerfumeNote>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<IBaseResponce<List<PerfumeNote>>> Get()
+        {
+            try
+            {
+                var perfumeNotes = _perfumeNoteRepository.Get();
+
+                if (!perfumeNotes.Any())
+                {
+                    return new Response<List<PerfumeNote>>()
+                    {
+                        Description = "Not found",
+                        StatusCode = StatusCode.OK
+                    };
+                }
+
+                return new Response<List<PerfumeNote>>()
+                {
+                    Result = perfumeNotes.ToList(),
+                    Description = "Объект добавлен",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<List<PerfumeNote>>()
                 {
                     StatusCode = StatusCode.InternalServerError,
                     Description = $"Внутренняя ошибка: {ex.Message}"
