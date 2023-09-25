@@ -53,7 +53,7 @@ namespace TonightPerfume.Service.Services.UserServ
         {
             try
             {
-                var users = await _userRepository.Get().ToListAsync();
+                var users = _userRepository.Get().ToList();
 
                 return new Response<List<BaseUser>>()
                 {

@@ -53,6 +53,7 @@ namespace TonightPerfume.Service.Services.AccountServ
                     };
                 }
             }
+
             return new Response<IDictionary<string, string>>()
             {
                 StatusCode = StatusCode.OK,
@@ -167,7 +168,7 @@ namespace TonightPerfume.Service.Services.AccountServ
 
         private async Task<BaseUser?> ValidateUser(LoginDto model)
         {
-            var user = await _userRepository.Get().FirstOrDefaultAsync(x => x.Username == model.Username);
+            var user = _userRepository.Get().FirstOrDefault(x => x.Username == model.Username);
             if (user == null) return null;
             return user;
         }

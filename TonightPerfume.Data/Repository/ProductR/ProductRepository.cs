@@ -25,14 +25,19 @@ namespace TonightPerfume.Data.Repository.ProductR
             await _db.SaveChangesAsync();
         }
 
-        public IQueryable<Product> Get()
+        public IEnumerable<Product> Get()
         {
-            return _db.Products;
+            return _db.Products.Include(x => x.Brand);
         }
 
         public async Task<Product> GetById(uint id)
         {
-            return await _db.Products.Where(x => x.Product_ID == id).FirstOrDefaultAsync();
+            return await _db.Products
+                            .Where(x => x.Product_ID == id)
+                            .Include(x => x.PerfumeNotes)
+                            .Include(x => x.Category)
+                            .Include(x => x.Brand)
+                            .FirstOrDefaultAsync();
         }
 
         public async Task<Product> Update(Product model)

@@ -29,8 +29,7 @@ builder.Services.AddControllers();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connection)
-         /*.UseLazyLoadingProxies()*/
+    options.UseMySql(connection, ServerVersion.AutoDetect(connection), b => b.MigrationsAssembly("TonightPerfume.API"))
 );
 
 builder.Services.InitializeRepositories();

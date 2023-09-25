@@ -30,7 +30,7 @@ namespace TonightPerfume.Data.Repository.User
             await _db.SaveChangesAsync();
         }
 
-        public IQueryable<BaseUser> Get()
+        public IEnumerable<BaseUser> Get()
         {
             return _db.Users;
         }

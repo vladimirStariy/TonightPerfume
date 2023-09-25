@@ -2,11 +2,10 @@
 
 namespace TonightPerfume.Domain.Models
 {
-    public class PerfumeNote
+    public class AromaGroup
     {
-        public uint Note_ID { get; set; }
-        public string Name { get; set; }
-        public string Type { get; set; }
+        public uint AromaGroup_ID { get; set; }
+        public string AromaGroup_Name { get; set; }
 
         [JsonIgnore]
         public virtual List<Product> Products { get; } = new List<Product>();

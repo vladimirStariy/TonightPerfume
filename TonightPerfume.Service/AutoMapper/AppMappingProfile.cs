@@ -9,7 +9,7 @@ namespace TonightPerfume.Service.AutoMapper
     {
         public AppMappingProfile()
         {
-            CreateMap<Product, ProductCardViewModel>();
+            CreateMap<Product, ProductCardDto>();
         }
     }
 }
