@@ -13,7 +13,7 @@ namespace TonightPerfume.Domain.Models
         public uint Brand_ID { get; set; }
         public string Country { get; set; }
         public string Year { get; set; }
-        
+
         public string Description { get; set; }
 
         [ForeignKey("Category_ID")]

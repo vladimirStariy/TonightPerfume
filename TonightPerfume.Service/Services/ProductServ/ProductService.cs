@@ -10,20 +10,18 @@ namespace TonightPerfume.Service.Services.ProductServ
 {
     public class ProductService : IProductService
     {
-        //private readonly IMapper _mapper;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<PerfumeNote> _perfumeNotesRepository;
         private readonly IRepository<Discount> _discountRepository;
         private readonly IRepository<Price> _priceRepository;
 
-        public ProductService(/*IMapper mapper, */
+        public ProductService(
             IRepository<Product> productRepository,
             IRepository<PerfumeNote> perfumeNotesRepository,
             IRepository<Discount> discountRepository,
             IRepository<Price> priceRepository
         )
         {
-            //_mapper = mapper;
             _productRepository = productRepository;
             _perfumeNotesRepository = perfumeNotesRepository;
             _discountRepository = discountRepository;
@@ -163,7 +161,7 @@ namespace TonightPerfume.Service.Services.ProductServ
                 return new Response<ProductDto>()
                 {
                     Result = productDto,
-                    Description = "Продукт добавлен",
+                    Description = "Объект добавлен",
                     StatusCode = StatusCode.OK
                 };
             }

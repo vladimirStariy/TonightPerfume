@@ -12,10 +12,10 @@ namespace TonightPerfume.Domain.Models
 
         [JsonIgnore]
         [ForeignKey("Product_ID")]
-        public virtual Product Product { get; set; }
+        public virtual Product? Product { get; set; }
 
         [JsonIgnore]
         [ForeignKey("Volume_ID")]
-        public virtual Volume Volume { get; set; }
+        public virtual Volume? Volume { get; set; }
     }
 }

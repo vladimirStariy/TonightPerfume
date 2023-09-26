@@ -17,6 +17,7 @@ namespace TonightPerfume.Data.Repository.ProductR
         {
             await _db.Products.AddAsync(model);
             await _db.SaveChangesAsync();
+            
         }
 
         public async Task Delete(Product model)
