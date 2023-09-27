@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using TonightPerfume.Data.Repository.BaseRepository;
+using TonightPerfume.Data.Repository.ProductR;
 using TonightPerfume.Domain.Enum;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;
+using TonightPerfume.Domain.Utils;
+using TonightPerfume.Domain.Viewmodels.Filter;
 using TonightPerfume.Domain.Viewmodels.ProductVM;
 
 namespace TonightPerfume.Service.Services.ProductServ
@@ -14,18 +17,27 @@ namespace TonightPerfume.Service.Services.ProductServ
         private readonly IRepository<PerfumeNote> _perfumeNotesRepository;
         private readonly IRepository<Discount> _discountRepository;
         private readonly IRepository<Price> _priceRepository;
+        private readonly IRepository<Brand> _brandRepository;
+        private readonly IRepository<Category> _categoryRepository;
+        private readonly IRepository<AromaGroup> _aromaGroupRepository;
 
         public ProductService(
             IRepository<Product> productRepository,
             IRepository<PerfumeNote> perfumeNotesRepository,
             IRepository<Discount> discountRepository,
-            IRepository<Price> priceRepository
+            IRepository<Price> priceRepository,
+            IRepository<Brand> brandRepository,
+            IRepository<Category> categoryRepository,
+            IRepository<AromaGroup> aromaGroupRepository
         )
         {
             _productRepository = productRepository;
             _perfumeNotesRepository = perfumeNotesRepository;
             _discountRepository = discountRepository;
             _priceRepository = priceRepository;
+            _brandRepository = brandRepository;
+            _categoryRepository = categoryRepository;
+            _aromaGroupRepository = aromaGroupRepository;
         }
 
         public async Task<IBaseResponce<ProductAddDto>> Create(ProductAddDto model)
@@ -175,5 +187,114 @@ namespace TonightPerfume.Service.Services.ProductServ
             }
         }
 
+        public async Task<IBaseResponce<FilterDto>> GetFilter(int count)
+        {
+            try
+            {
+                var aromaGroups = _aromaGroupRepository.Get().ToList().OrderBy(x => x.AromaGroup_Name).Take(count);
+                var brands = _brandRepository.Get().ToList().OrderBy(x => x.Name).Take(count);
+                var categories = _categoryRepository.Get();
+                var notes = _perfumeNotesRepository.Get().ToList().OrderBy(x => x.Name).Take(count);
+                var countries = _productRepository.Get().ToList().OrderBy(x => x.Country).Select(x => x.Country).Take(count);
+
+                FilterDto filterDto = new FilterDto()
+                {
+                    AromaGroups = aromaGroups.ToList(),
+                    Brands = brands.ToList(),
+                    Categories = categories.ToList(),
+                    PerfumeNotes = notes.ToList(),
+                    Countries = countries.ToList(),
+                };
+
+                return new Response<FilterDto>()
+                {
+                    Result = filterDto,
+                    Description = "Объект добавлен",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<FilterDto>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<IBaseResponce<PagedList<ProductCardDto>>> GetProductsWithPagination(int page)
+        {
+            try
+            {
+                var products = _productRepository.Get().ToList();
+                var productCardDtos = new List<ProductCardDto>();
+                var prices = _priceRepository.Get();
+
+                if (!products.Any())
+                {
+                    return new Response<PagedList<ProductCardDto>>()
+                    {
+                        Description = "Not found",
+                        StatusCode = StatusCode.OK
+                    };
+                }
+
+                var discounts = _discountRepository.Get().ToList();
+
+                foreach (var item in products)
+                {
+                    var productDto = new ProductCardDto()
+                    {
+                        Id = item.Product_ID,
+                        Name = item.Name,
+                        Brand = item.Brand.Name,
+                        Price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value)
+                    };
+
+                    if (!discounts.Any())
+                    {
+                        productDto.Discount = 0;
+                    }
+                    else
+                    {
+                        productDto.Discount = discounts.Where(x => x.Product_ID == item.Product_ID).Select(x => x.Value).FirstOrDefault();
+                    }
+
+                    productCardDtos.Add(productDto);
+                }
+
+                var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, page, 10);
+
+                return new Response<PagedList<ProductCardDto>>()
+                {
+                    Result = result,
+                    Description = "Продукт добавлен",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<PagedList<ProductCardDto>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
+
+
+        //public async Task<IBaseResponce<List<ProductCardDto>>> GetFilteredProducts(FilterRequestDto model)
+        //{
+        //    try
+        //    {
+        //        var products = _productRepository.Get();
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //    }
+        //}
     }
 }

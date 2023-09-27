@@ -13,6 +13,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("DesktopLocalPolicy", builder => builder
                        .WithOrigins("https://localhost:3000")
                        .AllowAnyHeader()
+                       .WithExposedHeaders()
                        .AllowAnyMethod()
                        .AllowCredentials());
     options.AddPolicy("MobileLocalPolicy", builder => builder
@@ -22,7 +23,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAllPolicy", builder => builder
                        .AllowAnyOrigin()
                        .AllowAnyHeader()
-                       .AllowAnyMethod());
+                       .AllowAnyMethod()
+                       .WithExposedHeaders());
 });
 
 builder.Services.AddControllers();
@@ -98,7 +100,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("DesktopLocalPolicy");
+app.UseCors("AllowAllPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
