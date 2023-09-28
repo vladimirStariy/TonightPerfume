@@ -13,5 +13,6 @@ namespace TonightPerfume.Service.Services.ProductServ
         Task<IBaseResponce<PagedList<ProductCardDto>>> GetProductsWithPagination(int page);
         Task<IBaseResponce<ProductDto>> GetById(uint id);
         Task<IBaseResponce<FilterDto>> GetFilter(int count);
+        Task<IBaseResponce<PagedList<ProductCardDto>>> GetFilteredProductsWithPagination(FilterRequestDto model);
     }
 }

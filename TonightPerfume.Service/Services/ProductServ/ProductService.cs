@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using System.Linq;
 using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Data.Repository.ProductR;
 using TonightPerfume.Domain.Enum;
@@ -283,18 +285,91 @@ namespace TonightPerfume.Service.Services.ProductServ
             }
         }
 
+        public async Task<IBaseResponce<PagedList<ProductCardDto>>> GetFilteredProductsWithPagination(FilterRequestDto model)
+        {
+            try
+            {
+                var perfumeNotes = new List<PerfumeNote>();
+                var prices = new List<Price>();
 
+                var products = _productRepository.Get();
 
-        //public async Task<IBaseResponce<List<ProductCardDto>>> GetFilteredProducts(FilterRequestDto model)
-        //{
-        //    try
-        //    {
-        //        var products = _productRepository.Get();
-        //    }
-        //    catch (Exception ex)
-        //    {
+                if (model.Brands.Count > 0)
+                {
+                    products = products.Where(x => model.Brands.Contains((int)x.Brand_ID));
+                }
+                if (model.Categories.Count > 0)
+                {
+                    products = products.Where(x => model.Categories.Contains((int)x.Category_ID));
+                }
+                if (model.PerfumeNotes.Count > 0)
+                {
+                    products = products.Where(x => x.PerfumeNotes.Any(y => model.PerfumeNotes.Contains((int)y.Note_ID)));
+                }
+                if (model.Prices.Length > 0)
+                {
+                    prices = _priceRepository.Get().Where(x => x.Value >= model.Prices[0] && x.Value <= model.Prices[1]).ToList();
+                    products = products.Where(x => prices.Any(y => x.Product_ID == y.Product_ID));
+                } 
+                else
+                {
+                    prices =_priceRepository.Get().ToList();
+                }
 
-        //    }
-        //}
+                var filteredProducts = products.ToList();
+
+                if (!filteredProducts.Any())
+                {
+                    return new Response<PagedList<ProductCardDto>>()
+                    {
+                        Description = "Not found",
+                        StatusCode = StatusCode.OK
+                    };
+                }
+
+                var productCardDtos = new List<ProductCardDto>();
+
+                var discounts = _discountRepository.Get().ToList();
+
+                foreach (var item in filteredProducts)
+                {
+                    var productDto = new ProductCardDto()
+                    {
+                        Id = item.Product_ID,
+                        Name = item.Name,
+                        Brand = item.Brand.Name,
+                        Price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value)
+                    };
+
+                    if (!discounts.Any())
+                    {
+                        productDto.Discount = 0;
+                    }
+                    else
+                    {
+                        productDto.Discount = discounts.Where(x => x.Product_ID == item.Product_ID).Select(x => x.Value).FirstOrDefault();
+                    }
+
+                    productCardDtos.Add(productDto);
+                }
+
+                var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.Page, 10);
+
+                return new Response<PagedList<ProductCardDto>>()
+                {
+                    Result = result,
+                    Description = "Успешно",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<PagedList<ProductCardDto>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
     }
 }

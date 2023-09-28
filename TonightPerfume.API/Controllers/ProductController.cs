@@ -41,7 +41,7 @@ namespace TonightPerfume.API.Controllers
         {
             var response = await _productService.GetProductsWithPagination(page);
  
-            Response.Headers.Add("Access-Control-Expose-Headers", "X-Pages-Count, X-Pages-HasNext, X-Pages-HasPrevious, X-Pages-CurrentPage");
+            Response.Headers.Add("Access-Control-Expose-Headers", "X-Pages-Count, X-Pages-HasNext, X-Pages-HasPrevious, X-Pages-CurrentPage, X-Pages-TotalPages");
 
             Response.Headers.Add("X-Pages-Count", JsonConvert.SerializeObject(response.Result.Count));
             Response.Headers.Add("X-Pages-HasNext", JsonConvert.SerializeObject(response.Result.HasNext));
@@ -65,6 +65,26 @@ namespace TonightPerfume.API.Controllers
         public async Task<FilterDto> Get(int count)
         {
             var response = await _productService.GetFilter(count);
+            return response.Result;
+        }
+
+        [AllowAnonymous]
+        [HttpPost("filter-requ")]
+        public async Task<ICollection<ProductCardDto>> GetFilteredData(FilterRequestDto model)
+        {
+            var response = await _productService.GetFilteredProductsWithPagination(model);
+
+            if(response.Result != null)
+            {
+                Response.Headers.Add("Access-Control-Expose-Headers", "X-Pages-Count, X-Pages-HasNext, X-Pages-HasPrevious, X-Pages-CurrentPage, X-Pages-TotalPages");
+
+                Response.Headers.Add("X-Pages-Count", JsonConvert.SerializeObject(response.Result.Count));
+                Response.Headers.Add("X-Pages-HasNext", JsonConvert.SerializeObject(response.Result.HasNext));
+                Response.Headers.Add("X-Pages-HasPrevious", JsonConvert.SerializeObject(response.Result.HasPrevious));
+                Response.Headers.Add("X-Pages-CurrentPage", JsonConvert.SerializeObject(response.Result.CurrentPage));
+                Response.Headers.Add("X-Pages-TotalPages", JsonConvert.SerializeObject(response.Result.TotalPages));
+            }
+
             return response.Result;
         }
     }
