@@ -8,6 +8,6 @@ namespace TonightPerfume.Domain.Models
         public string AromaGroup_Name { get; set; }
 
         [JsonIgnore]
-        public virtual List<Product> Products { get; } = new List<Product>();
+        public virtual ICollection<Product> Products { get; } = new List<Product>();
     }
 }

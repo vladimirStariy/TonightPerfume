@@ -306,6 +306,10 @@ namespace TonightPerfume.Service.Services.ProductServ
                 {
                     products = products.Where(x => x.PerfumeNotes.Any(y => model.PerfumeNotes.Contains((int)y.Note_ID)));
                 }
+                if (model.AromaGroups.Count > 0)
+                {
+                    products = products.Where(x => x.AromaGroups.Any(y => model.AromaGroups.Contains((int)y.AromaGroup_ID)));
+                }
                 if (model.Prices.Length > 0)
                 {
                     prices = _priceRepository.Get().Where(x => x.Value >= model.Prices[0] && x.Value <= model.Prices[1]).ToList();
@@ -333,12 +337,22 @@ namespace TonightPerfume.Service.Services.ProductServ
 
                 foreach (var item in filteredProducts)
                 {
+                    var _price = 0;
+                    try
+                    {
+                        _price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value);
+                    }
+                    catch
+                    {
+                        _price = 0;
+                    }
+
                     var productDto = new ProductCardDto()
                     {
                         Id = item.Product_ID,
                         Name = item.Name,
                         Brand = item.Brand.Name,
-                        Price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value)
+                        Price = _price
                     };
 
                     if (!discounts.Any())
