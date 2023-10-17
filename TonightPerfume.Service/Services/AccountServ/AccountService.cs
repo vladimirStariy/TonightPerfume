@@ -13,6 +13,7 @@ namespace TonightPerfume.Service.Services.AccountServ
     public class AccountService : IAccountService
     {
         private readonly IRepository<BaseUser> _userRepository;
+
         private readonly ITokenRepository<RefreshToken> _tokenRepository;
 
         public AccountService(IRepository<BaseUser> userRepository, ITokenRepository<RefreshToken> tokenRepository)
@@ -21,7 +22,7 @@ namespace TonightPerfume.Service.Services.AccountServ
             _tokenRepository = tokenRepository;
         }
 
-        public async Task<IBaseResponce<IDictionary<string, string>>> Login(LoginDto model)
+        public async Task<IBaseResponce<IDictionary<string, string>>> Login(LoginByNumDto model)
         {
             var user = await ValidateUser(model);
             if (user != null)
@@ -35,7 +36,7 @@ namespace TonightPerfume.Service.Services.AccountServ
                         Description = $"Неправильный пароль"
                     };
                 }
-                else 
+                else
                 {
                     var tokens = JwtTokens.GeneratePairTokens(user);
                     await _tokenRepository.Create(new RefreshToken()
@@ -61,30 +62,47 @@ namespace TonightPerfume.Service.Services.AccountServ
             };
         }
 
-        public async Task<IBaseResponce<BaseUser>> Register(RegisterDto model)
+        public async Task<IBaseResponce<string>> RegisterBySms(string phone)
         {
             try
             {
-                var result = PasswordHashing.GetPasswordHashAndSalt(model.Password);
+                HttpClient httpClient = new HttpClient();
+                string base_url = "https://userarea.sms-assistent.by/api/v1/send_sms/plain";
+
+                string password = SecurityConfig.GetRandomPassword(10);
+                string message = $"Ваш пароль: {password}";
+
+                string url = $"{base_url}?user={SecurityConfig.SMS_LOGIN}" +
+                                       $"&password={SecurityConfig.SMS_PASSWORD}" +
+                                       $"&recipient=298426400" +
+                                       $"&message={message}" +
+                                       $"&sender={SecurityConfig.SMS_SENDER}";
+                
+                using var request = new HttpRequestMessage(HttpMethod.Get, url);
+                using var response = await httpClient.SendAsync(request);
+                string responseText = await response.Content.ReadAsStringAsync();
+
+                var result = PasswordHashing.GetPasswordHashAndSalt(password);
 
                 var newUser = new BaseUser()
                 {
-                    Username = model.Username,
+                    Username = phone,
+                    Phone = phone,
                     Password = result["hash"],
                     Salt = result["salt"]
                 };
                 await _userRepository.Create(newUser);
 
-                return new Response<BaseUser>()
+                return new Response<string>()
                 {
-                    Result = newUser,
+                    Result = responseText,
                     Description = "Пользователь добавлен",
                     StatusCode = StatusCode.OK
                 };
             }
             catch (Exception ex)
             {
-                return new Response<BaseUser>()
+                return new Response<string>()
                 {
                     StatusCode = StatusCode.InternalServerError,
                     Description = $"Внутренняя ошибка: {ex.Message}"
@@ -166,13 +184,11 @@ namespace TonightPerfume.Service.Services.AccountServ
             }
         }
 
-        private async Task<BaseUser?> ValidateUser(LoginDto model)
+        private async Task<BaseUser?> ValidateUser(LoginByNumDto model)
         {
-            var user = _userRepository.Get().FirstOrDefault(x => x.Username == model.Username);
+            var user = _userRepository.Get().FirstOrDefault(x => x.Phone == model.Phone);
             if (user == null) return null;
             return user;
         }
-
-        
     }
 }

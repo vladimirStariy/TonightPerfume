@@ -4,6 +4,7 @@ using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Viewmodels.UserVM;
 using TonightPerfume.Service.Services.AccountServ;
 using TonightPerfume.Service.Services.UserServ;
+using static System.Net.WebRequestMethods;
 
 namespace TonightPerfume.API.Controllers
 {
@@ -20,15 +21,23 @@ namespace TonightPerfume.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<BaseUser> Register(RegisterDto model)
+        public async Task<string> Register(string number)
         {
-            var response = await _accountService.Register(model);
+            var response = await _accountService.RegisterBySms(number);
+            return response.Result;
+        }
+
+        [AllowAnonymous]
+        [HttpPost("loginByNum")]
+        public async Task<string> LoginByNumber(string number)
+        {
+            var response = await _accountService.RegisterBySms(number);
             return response.Result;
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto model)
+        public async Task<IActionResult> Login(LoginByNumDto model)
         {
             model.DeviceData = Request.Headers.UserAgent.ToString();
             var response = await _accountService.Login(model);

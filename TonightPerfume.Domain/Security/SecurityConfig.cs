@@ -64,6 +64,10 @@ namespace TonightPerfume.Domain.Security
         public const int REFRESH_TOKEN_LIFETIME = 5184000; // 60 дней
         public const int ACCES_TOKEN_LIFETIME = 1800; //3600
 
+        public const string SMS_SENDER = "TonightPerf";
+        public const string SMS_LOGIN = "Hoholko";
+        public const string SMS_PASSWORD = "35688341";
+
         internal const string ACCESS_KEY = "EiVyJh3gGYUfN2XfNe+U5OBdtri10iH56OHicjzufMqoZbfDxZWlB1LSOHVS3bCC";        
 
         internal const string REFRESH_KEY = "cGgZVjavLKIXWAtbW7NjA4QdShmz48fy7aJ90+hh8G1p0SkFmrDkpULgnZRlBdku";
@@ -75,6 +79,22 @@ namespace TonightPerfume.Domain.Security
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ACCESS_KEY));
         public static SymmetricSecurityKey GetSymmetricRefreshKey() =>
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(REFRESH_KEY));
+
+        public static string GetRandomPassword(int length)
+        {
+            const string chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+            StringBuilder sb = new StringBuilder();
+            Random rnd = new Random();
+
+            for (int i = 0; i < length; i++)
+            {
+                int index = rnd.Next(chars.Length);
+                sb.Append(chars[index]);
+            }
+
+            return sb.ToString();
+        }
     }
 
 
