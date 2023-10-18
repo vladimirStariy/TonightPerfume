@@ -10,6 +10,8 @@ namespace TonightPerfume.Domain.Enum
     {
         UserNotFound = 0,
         OK = 200,
-        InternalServerError = 500
+        InternalServerError = 500,
+        IncorrectPassword = 401,
+        IncorrectData = 401
     }
 }

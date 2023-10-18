@@ -8,7 +8,7 @@ using static System.Net.WebRequestMethods;
 
 namespace TonightPerfume.API.Controllers
 {
-    [Route("[controller]")]
+    [Route("")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -21,9 +21,9 @@ namespace TonightPerfume.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<string> Register(string number)
+        public async Task<string> Register(RegisterDto model)
         {
-            var response = await _accountService.RegisterBySms(number);
+            var response = await _accountService.RegisterBySms(model.Phone);
             return response.Result;
         }
 
@@ -41,8 +41,15 @@ namespace TonightPerfume.API.Controllers
         {
             model.DeviceData = Request.Headers.UserAgent.ToString();
             var response = await _accountService.Login(model);
-            HttpContext.Response.Cookies.Append("refreshToken", response.Result["refreshToken"], new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Lax, Expires = DateTime.Now.AddDays(30) });
-            return Ok(response.Result);
+            if(response.StatusCode == Domain.Enum.StatusCode.OK)
+            {
+                HttpContext.Response.Cookies.Append("refreshToken", response.Result["refreshToken"], new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Lax, Expires = DateTime.Now.AddDays(30) });
+                return Ok(response.Result);
+            }
+            else
+            {
+                return BadRequest(StatusCodes.Status404NotFound);
+            }
         }
 
         [HttpPost("logout")]

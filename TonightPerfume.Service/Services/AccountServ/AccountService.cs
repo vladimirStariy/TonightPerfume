@@ -32,7 +32,7 @@ namespace TonightPerfume.Service.Services.AccountServ
                 {
                     return new Response<IDictionary<string, string>>()
                     {
-                        StatusCode = StatusCode.OK,
+                        StatusCode = StatusCode.IncorrectPassword,
                         Description = $"Неправильный пароль"
                     };
                 }
@@ -57,7 +57,7 @@ namespace TonightPerfume.Service.Services.AccountServ
 
             return new Response<IDictionary<string, string>>()
             {
-                StatusCode = StatusCode.OK,
+                StatusCode = StatusCode.IncorrectData,
                 Description = $"Неправильный логин или пароль"
             };
         }
