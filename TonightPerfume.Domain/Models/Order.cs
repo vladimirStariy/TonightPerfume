@@ -17,10 +17,12 @@
 
         public string Note { get; set; }
 
-        public bool isCompeted { get; set; }
-        public DateTime OrderCompleteDate { get; set; }
+        public int SummaryPrice { get; set; }
 
-        
+        public bool isCompeted { get; set; }
+        public bool isCanceled { get; set; } = false;
+
+        public DateTime OrderCompleteDate { get; set; }
 
         public uint User_ID { get; set; }
     }

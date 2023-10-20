@@ -13,7 +13,6 @@ namespace TonightPerfume.Service.Services.AccountServ
     public class AccountService : IAccountService
     {
         private readonly IRepository<BaseUser> _userRepository;
-
         private readonly ITokenRepository<RefreshToken> _tokenRepository;
 
         public AccountService(IRepository<BaseUser> userRepository, ITokenRepository<RefreshToken> tokenRepository)
@@ -22,7 +21,7 @@ namespace TonightPerfume.Service.Services.AccountServ
             _tokenRepository = tokenRepository;
         }
 
-        public async Task<IBaseResponce<IDictionary<string, string>>> Login(LoginByNumDto model)
+        public async Task<IBaseResponce<LoginResponseDto>> Login(LoginByNumDto model)
         {
             var user = await ValidateUser(model);
             if (user != null)
@@ -30,7 +29,7 @@ namespace TonightPerfume.Service.Services.AccountServ
                 var result = PasswordHashing.GetPasswordHashAndSalt(model.Password, user.Salt);
                 if (user.Password != result["hash"])
                 {
-                    return new Response<IDictionary<string, string>>()
+                    return new Response<LoginResponseDto>()
                     {
                         StatusCode = StatusCode.IncorrectPassword,
                         Description = $"Неправильный пароль"
@@ -38,6 +37,8 @@ namespace TonightPerfume.Service.Services.AccountServ
                 }
                 else
                 {
+                    LoginResponseDto response = new LoginResponseDto();
+
                     var tokens = JwtTokens.GeneratePairTokens(user);
                     await _tokenRepository.Create(new RefreshToken()
                     {
@@ -46,16 +47,21 @@ namespace TonightPerfume.Service.Services.AccountServ
                         User_ID = user.User_ID
                     });
 
-                    return new Response<IDictionary<string, string>>()
+                    response.tokenPairs = tokens;
+                    response.user = new ResponseUserDto(); 
+                    response.user.id = user.User_ID;
+                    response.user.phone = user.Phone;
+
+                    return new Response<LoginResponseDto>()
                     {
-                        Result = tokens,
+                        Result = response,
                         Description = "",
                         StatusCode = StatusCode.OK
                     };
                 }
             }
 
-            return new Response<IDictionary<string, string>>()
+            return new Response<LoginResponseDto>()
             {
                 StatusCode = StatusCode.IncorrectData,
                 Description = $"Неправильный логин или пароль"
@@ -66,6 +72,15 @@ namespace TonightPerfume.Service.Services.AccountServ
         {
             try
             {
+                if(!ValidatePhone(phone))
+                {
+                    return new Response<string>()
+                    {
+                        StatusCode = StatusCode.UserExists,
+                        Description = $"Пользователь с таким номером телефона уже зарегистрирован."
+                    };
+                }
+
                 HttpClient httpClient = new HttpClient();
                 string base_url = "https://userarea.sms-assistent.by/api/v1/send_sms/plain";
 
@@ -189,6 +204,13 @@ namespace TonightPerfume.Service.Services.AccountServ
             var user = _userRepository.Get().FirstOrDefault(x => x.Phone == model.Phone);
             if (user == null) return null;
             return user;
+        }
+
+        private bool ValidatePhone(string phone)
+        {
+            var user = _userRepository.Get().FirstOrDefault(x => x.Phone == phone);
+            if (user == null) return true;
+            return false;
         }
     }
 }

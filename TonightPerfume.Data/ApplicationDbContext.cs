@@ -21,6 +21,7 @@ namespace TonightPerfume.Data
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Volume> Volumes { get; set; }
         public DbSet<Price> Prices { get; set; }
+        public DbSet<Favorite> Favorites { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -367,6 +368,12 @@ namespace TonightPerfume.Data
                         new Price { Price_ID = 99, Product_ID = 20, Volume_ID = 4, Value=6635 },
                         new Price { Price_ID = 100, Product_ID = 20, Volume_ID = 5, Value=8735 },
                     });
+            });
+
+            modelBuilder.Entity<Favorite>(builder =>
+            {
+                builder.ToTable("Favorites").HasKey(x => x.Id);
+                builder.Property(x => x.Id).ValueGeneratedOnAdd();
             });
         }
     }

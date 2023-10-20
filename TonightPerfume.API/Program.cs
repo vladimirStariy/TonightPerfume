@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DesktopLocalPolicy", builder => builder
-                       .WithOrigins("https://localhost:3000")
+                       .WithOrigins("https://localhost:3000", "http://localhost:3000")
                        .AllowAnyHeader()
                        .WithExposedHeaders()
                        .AllowAnyMethod()
@@ -100,7 +100,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAllPolicy");
+app.UseCors("DesktopLocalPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();

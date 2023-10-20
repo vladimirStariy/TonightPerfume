@@ -12,6 +12,7 @@ namespace TonightPerfume.Domain.Enum
         OK = 200,
         InternalServerError = 500,
         IncorrectPassword = 401,
-        IncorrectData = 401
+        IncorrectData = 401,
+        UserExists = 901
     }
 }

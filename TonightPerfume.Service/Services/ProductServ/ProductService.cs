@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Data.Repository.ProductR;
+using TonightPerfume.Data.Repository.Profile;
 using TonightPerfume.Domain.Enum;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;
@@ -384,6 +385,56 @@ namespace TonightPerfume.Service.Services.ProductServ
                     Description = $"Внутренняя ошибка: {ex.Message}"
                 };
             }
+        }
+
+        public async Task<IBaseResponce<PagedList<ProductCardDto>>> GetFavorites(uint id)
+        {
+            var favorites = _favoritesRepository.Get().Where(x => x.User_ID == id);
+            var products = _productRepository.Get().ToList();
+            var productCardDtos = new List<ProductCardDto>();
+            var prices = _priceRepository.Get();
+
+            if (!products.Any())
+            {
+                return new Response<List<ProductCardDto>>()
+                {
+                    Description = "Not found",
+                    StatusCode = StatusCode.OK
+                };
+            }
+
+            var discounts = _discountRepository.Get().ToList();
+
+            foreach (var item in products)
+            {
+                var productDto = new ProductCardDto()
+                {
+                    Id = item.Product_ID,
+                    Name = item.Name,
+                    Brand = item.Brand.Name,
+                    Price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value)
+                };
+
+                if (!discounts.Any())
+                {
+                    productDto.Discount = 0;
+                }
+                else
+                {
+                    productDto.Discount = discounts.Where(x => x.Product_ID == item.Product_ID).Select(x => x.Value).FirstOrDefault();
+                }
+
+                productCardDtos.Add(productDto);
+            }
+
+            var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, page, 10);
+
+            return new Response<PagedList<ProductCardDto>>()
+            {
+                Result = result,
+                Description = "Продукт добавлен",
+                StatusCode = StatusCode.OK
+            };
         }
     }
 }

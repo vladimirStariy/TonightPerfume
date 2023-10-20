@@ -7,7 +7,7 @@ namespace TonightPerfume.Service.Services.AccountServ
 {
     public interface IAccountService
     {
-        Task<IBaseResponce<IDictionary<string, string>>> Login(LoginByNumDto model);
+        Task<IBaseResponce<LoginResponseDto>> Login(LoginByNumDto model);
         Task<IBaseResponce<string>> RegisterBySms(string phone);
         Task<IBaseResponce<IDictionary<string, string>>> RefreshToken(string token);
         Task<IBaseResponce<string>> Logout(string token);
