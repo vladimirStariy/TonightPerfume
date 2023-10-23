@@ -27,5 +27,8 @@ namespace TonightPerfume.Domain.Models
 
         [JsonIgnore]
         public virtual ICollection<AromaGroup> AromaGroups { get; set; }
+
+        [JsonIgnore]
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

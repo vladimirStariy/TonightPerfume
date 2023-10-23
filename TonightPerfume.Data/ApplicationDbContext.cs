@@ -7,7 +7,7 @@ namespace TonightPerfume.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            //Database.EnsureDeleted();
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
@@ -22,6 +22,7 @@ namespace TonightPerfume.Data
         public DbSet<Volume> Volumes { get; set; }
         public DbSet<Price> Prices { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
+        public DbSet<Order> Orders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -374,6 +375,15 @@ namespace TonightPerfume.Data
             {
                 builder.ToTable("Favorites").HasKey(x => x.Id);
                 builder.Property(x => x.Id).ValueGeneratedOnAdd();
+            });
+
+            modelBuilder.Entity<Order>(builder =>
+            {
+                builder.ToTable("Orders").HasKey(x => x.Order_ID);
+                builder.Property(x => x.Order_ID).ValueGeneratedOnAdd();
+                builder.HasMany(x => x.Products)
+                       .WithMany(x => x.Orders)
+                       .UsingEntity("OrderProductsGroups");
             });
         }
     }

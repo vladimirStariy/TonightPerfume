@@ -9,12 +9,6 @@ namespace TonightPerfume.API.Controllers
     [ApiController]
     public class ProfileController : ControllerBase
     {
-        [Authorize]
-        [HttpGet("favorites")]
-        public async Task<IActionResult> Favorites()
-        {
-            return Ok(new ProfileTestDto() { response = "Success" });
-        }
 
         [Authorize]
         [HttpGet("orders")]
@@ -26,13 +20,6 @@ namespace TonightPerfume.API.Controllers
         [Authorize]
         [HttpGet("promocodes")]
         public async Task<IActionResult> Promocodes()
-        {
-            return Ok(new ProfileTestDto() { response = "Success" });
-        }
-
-        [Authorize]
-        [HttpPost("favorite")]
-        public async Task<IActionResult> AddToFavorites()
         {
             return Ok(new ProfileTestDto() { response = "Success" });
         }

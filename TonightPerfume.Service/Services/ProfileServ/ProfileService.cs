@@ -52,11 +52,11 @@ namespace TonightPerfume.Service.Services.ProfileServ
                     UserOrderCardDto card = new UserOrderCardDto()
                     {
                         OrderDate = item.Order_date,
-                        OrderPrice = item.SummaryPrice,
+                        OrderPrice = (int)item.SummaryPrice,
                     };
                     if (item.isCanceled) card.Status = "Отменён";
-                    if (item.isCompeted) card.Status = "Выполнен";
-                    if (!item.isCompeted) card.Status = "Выполняется";
+                    if (item.isCompleted) card.Status = "Выполнен";
+                    if (!item.isCompleted) card.Status = "Выполняется";
                     orderCards.Add(card);
                 }
 

@@ -8,9 +8,11 @@ using TonightPerfume.Data.Repository.Profile;
 using TonightPerfume.Domain.Enum;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;
+using TonightPerfume.Domain.Security;
 using TonightPerfume.Domain.Utils;
 using TonightPerfume.Domain.Viewmodels.Filter;
 using TonightPerfume.Domain.Viewmodels.ProductVM;
+using TonightPerfume.Domain.Viewmodels.ProfileVM;
 
 namespace TonightPerfume.Service.Services.ProductServ
 {
@@ -23,6 +25,7 @@ namespace TonightPerfume.Service.Services.ProductServ
         private readonly IRepository<Brand> _brandRepository;
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<AromaGroup> _aromaGroupRepository;
+        private readonly IRepository<Favorite> _favoriteRepository;
 
         public ProductService(
             IRepository<Product> productRepository,
@@ -31,7 +34,8 @@ namespace TonightPerfume.Service.Services.ProductServ
             IRepository<Price> priceRepository,
             IRepository<Brand> brandRepository,
             IRepository<Category> categoryRepository,
-            IRepository<AromaGroup> aromaGroupRepository
+            IRepository<AromaGroup> aromaGroupRepository,
+            IRepository<Favorite> favoriteRepository
         )
         {
             _productRepository = productRepository;
@@ -41,6 +45,7 @@ namespace TonightPerfume.Service.Services.ProductServ
             _brandRepository = brandRepository;
             _categoryRepository = categoryRepository;
             _aromaGroupRepository = aromaGroupRepository;
+            _favoriteRepository = favoriteRepository;
         }
 
         public async Task<IBaseResponce<ProductAddDto>> Create(ProductAddDto model)
@@ -286,7 +291,7 @@ namespace TonightPerfume.Service.Services.ProductServ
             }
         }
 
-        public async Task<IBaseResponce<PagedList<ProductCardDto>>> GetFilteredProductsWithPagination(FilterRequestDto model)
+        public async Task<IBaseResponce<PagedList<ProductCardDto>>> GetFilteredProductsWithPagination(FilterRequestDto model, string token)
         {
             try
             {
@@ -336,6 +341,12 @@ namespace TonightPerfume.Service.Services.ProductServ
 
                 var discounts = _discountRepository.Get().ToList();
 
+                List<uint> favorites = new List<uint>();
+                if (token != null)
+                {
+                    var user_id = JwtTokens.GetPayloadUser(token);
+                    favorites = _favoriteRepository.Get().Where(x => x.User_ID == user_id).Select(x => x.Product_ID).ToList();
+                }
                 foreach (var item in filteredProducts)
                 {
                     var _price = 0;
@@ -348,12 +359,20 @@ namespace TonightPerfume.Service.Services.ProductServ
                         _price = 0;
                     }
 
+                    bool isFavorite = false;
+                    if(token != null)
+                    {
+                        if(favorites.Contains(item.Product_ID))
+                            isFavorite = true;
+                    }
+
                     var productDto = new ProductCardDto()
                     {
                         Id = item.Product_ID,
                         Name = item.Name,
                         Brand = item.Brand.Name,
-                        Price = _price
+                        Price = _price,
+                        isFavorite = isFavorite,
                     };
 
                     if (!discounts.Any())
@@ -387,16 +406,19 @@ namespace TonightPerfume.Service.Services.ProductServ
             }
         }
 
-        public async Task<IBaseResponce<PagedList<ProductCardDto>>> GetFavorites(uint id)
+        public async Task<IBaseResponce<PagedList<ProductCardDto>>> GetFavorites(FavoriteRequestDto model)
         {
-            var favorites = _favoritesRepository.Get().Where(x => x.User_ID == id);
-            var products = _productRepository.Get().ToList();
+            var user_id = JwtTokens.GetPayloadUser(model.token);
+
+            var favorites = _favoriteRepository.Get().Where(x => x.User_ID == user_id).ToList();
+            var favoritesProductsIds = favorites.Select(x => x.Product_ID).ToList(); 
+            var products = _productRepository.Get().Where(x => favoritesProductsIds.Contains(x.Product_ID)).ToList();
             var productCardDtos = new List<ProductCardDto>();
             var prices = _priceRepository.Get();
 
             if (!products.Any())
             {
-                return new Response<List<ProductCardDto>>()
+                return new Response<PagedList<ProductCardDto>> ()
                 {
                     Description = "Not found",
                     StatusCode = StatusCode.OK
@@ -412,7 +434,8 @@ namespace TonightPerfume.Service.Services.ProductServ
                     Id = item.Product_ID,
                     Name = item.Name,
                     Brand = item.Brand.Name,
-                    Price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value)
+                    Price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value),
+                    isFavorite = true
                 };
 
                 if (!discounts.Any())
@@ -427,14 +450,70 @@ namespace TonightPerfume.Service.Services.ProductServ
                 productCardDtos.Add(productDto);
             }
 
-            var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, page, 10);
+            var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.page, 10);
 
             return new Response<PagedList<ProductCardDto>>()
             {
                 Result = result,
-                Description = "Продукт добавлен",
+                Description = "OK",
                 StatusCode = StatusCode.OK
             };
+        }
+
+        public async Task<IBaseResponce<string>> AddFavorite(uint product_id, string token)
+        {
+            try
+            {
+                var user_id = JwtTokens.GetPayloadUser(token);
+
+                Favorite favorite = new Favorite()
+                {
+                    Id = 0,
+                    Product_ID = product_id,
+                    User_ID = user_id
+                };
+                await _favoriteRepository.Create(favorite);
+
+                return new Response<string>()
+                {
+                    Result = "OK",
+                    Description = "Успешно",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<string>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<IBaseResponce<string>> RemoveFavorite(uint product_id, string token)
+        {
+            try
+            {
+                var user_id = JwtTokens.GetPayloadUser(token);
+                var favorite = _favoriteRepository.Get().Where(x => x.Product_ID  == product_id && x.User_ID == user_id).FirstOrDefault();
+                await _favoriteRepository.Delete(favorite);
+
+                return new Response<string>()
+                {
+                    Result = "OK",
+                    Description = "Успешно",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<string>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
         }
     }
 }

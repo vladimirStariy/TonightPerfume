@@ -7,5 +7,6 @@
         public string Brand { get; set; } 
         public int Price { get; set; }
         public int Discount { get; set; }
+        public bool isFavorite { get; set; } = false;
     }
 }

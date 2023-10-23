@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -33,6 +34,14 @@ namespace TonightPerfume.Domain.Security
                         tokenType == "access" ? SecurityConfig.GetSymmetricAccessKey() : SecurityConfig.GetSymmetricRefreshKey(), 
                         SecurityAlgorithms.HmacSha256
                     ));
+        }
+
+        public static uint GetPayloadUser(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var claims = handler.ValidateToken(token, SecurityConfig.GetRefreshValidationParameters(), out var tokenSecure);
+            var id = Convert.ToUInt32(claims.Claims.Where(x => x.Type == "jti").Select(x => x.Value).FirstOrDefault());
+            return id;
         }
 
         public static string CreateRefreshToken()
