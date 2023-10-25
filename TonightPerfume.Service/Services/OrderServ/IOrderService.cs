@@ -1,9 +1,10 @@
-﻿using TonightPerfume.Domain.Viewmodels.OrderVM;
+﻿using TonightPerfume.Domain.Response;
+using TonightPerfume.Domain.Viewmodels.OrderVM;
 
 namespace TonightPerfume.Service.Services.OrderServ
 {
     public interface IOrderService
     {
-        Task CreateOrderUnauthorized(OrderRequestDto model);
+        Task<IBaseResponce<string>> CreateOrderUnauthorized(OrderRequestDto model);
     }
 }

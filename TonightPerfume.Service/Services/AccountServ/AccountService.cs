@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using TonightPerfume.Data.Repository.BaseRepository;
+﻿using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Domain.Enum;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;
@@ -14,11 +11,13 @@ namespace TonightPerfume.Service.Services.AccountServ
     {
         private readonly IRepository<BaseUser> _userRepository;
         private readonly ITokenRepository<RefreshToken> _tokenRepository;
+        private readonly IRepository<Profile> _profileRepository;
 
-        public AccountService(IRepository<BaseUser> userRepository, ITokenRepository<RefreshToken> tokenRepository)
+        public AccountService(IRepository<BaseUser> userRepository, ITokenRepository<RefreshToken> tokenRepository, IRepository<Profile> profileRepository)
         {
             _userRepository = userRepository;
             _tokenRepository = tokenRepository;
+            _profileRepository = profileRepository;
         }
 
         public async Task<IBaseResponce<LoginResponseDto>> Login(LoginByNumDto model)
@@ -106,7 +105,14 @@ namespace TonightPerfume.Service.Services.AccountServ
                     Password = result["hash"],
                     Salt = result["salt"]
                 };
+
                 await _userRepository.Create(newUser);
+
+                await _profileRepository.Create(new Profile
+                {
+                    User_ID = newUser.User_ID,
+                    Phone = newUser.Phone,
+                });
 
                 return new Response<string>()
                 {

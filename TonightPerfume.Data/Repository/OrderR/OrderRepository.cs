@@ -33,9 +33,11 @@ namespace TonightPerfume.Data.Repository.OrderR
             throw new NotImplementedException();
         }
 
-        public Task<Order> Update(Order model)
+        public async Task<Order> Update(Order model)
         {
-            throw new NotImplementedException();
+            _db.Orders.Update(model);
+            await _db.SaveChangesAsync();
+            return model;
         }
     }
 }

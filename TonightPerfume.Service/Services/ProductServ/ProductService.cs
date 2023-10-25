@@ -1,10 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.Logging;
-using System.Diagnostics;
-using System.Linq;
-using TonightPerfume.Data.Repository.BaseRepository;
-using TonightPerfume.Data.Repository.ProductR;
-using TonightPerfume.Data.Repository.Profile;
+﻿using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Domain.Enum;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;

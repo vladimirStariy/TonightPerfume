@@ -7,7 +7,7 @@ namespace TonightPerfume.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
@@ -23,6 +23,9 @@ namespace TonightPerfume.Data
         public DbSet<Price> Prices { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderProduct> OrderProducts { get; set; }
+        public DbSet<Profile> Profiles { get; set; }
+        public DbSet<Adress> Adresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -249,125 +252,125 @@ namespace TonightPerfume.Data
                 builder.HasData(
                     new Price[]
                     {
-                        new Price { Price_ID = 1, Product_ID = 1, Volume_ID = 1, Value=2235 },
-                        new Price { Price_ID = 2, Product_ID = 1, Volume_ID = 2, Value=4335 },
-                        new Price { Price_ID = 3, Product_ID = 1, Volume_ID = 3, Value=5435 },
-                        new Price { Price_ID = 4, Product_ID = 1, Volume_ID = 4, Value=7635 },
-                        new Price { Price_ID = 5, Product_ID = 1, Volume_ID = 5, Value=9735 },
+                        new Price { Price_ID = 1, Product_ID = 1, Volume_ID = 1, Value=2235, PriceDate=DateTime.Now, isActual=true },
+                        new Price { Price_ID = 2, Product_ID = 1, Volume_ID = 2, Value=4335, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 3, Product_ID = 1, Volume_ID = 3, Value=5435, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 4, Product_ID = 1, Volume_ID = 4, Value=7635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 5, Product_ID = 1, Volume_ID = 5, Value=9735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 6, Product_ID = 2, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 7, Product_ID = 2, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 8, Product_ID = 2, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 9, Product_ID = 2, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 10, Product_ID = 2, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 6, Product_ID = 2, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 7, Product_ID = 2, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 8, Product_ID = 2, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 9, Product_ID = 2, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 10, Product_ID = 2, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 11, Product_ID = 3, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 12, Product_ID = 3, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 13, Product_ID = 3, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 14, Product_ID = 3, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 15, Product_ID = 3, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 11, Product_ID = 3, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 12, Product_ID = 3, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 13, Product_ID = 3, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 14, Product_ID = 3, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 15, Product_ID = 3, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 16, Product_ID = 4, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 17, Product_ID = 4, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 18, Product_ID = 4, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 19, Product_ID = 4, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 20, Product_ID = 4, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 16, Product_ID = 4, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 17, Product_ID = 4, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 18, Product_ID = 4, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 19, Product_ID = 4, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 20, Product_ID = 4, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 21, Product_ID = 5, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 22, Product_ID = 5, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 23, Product_ID = 5, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 24, Product_ID = 5, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 25, Product_ID = 5, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 21, Product_ID = 5, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 22, Product_ID = 5, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 23, Product_ID = 5, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 24, Product_ID = 5, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 25, Product_ID = 5, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 26, Product_ID = 6, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 27, Product_ID = 6, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 28, Product_ID = 6, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 29, Product_ID = 6, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 30, Product_ID = 6, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 26, Product_ID = 6, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 27, Product_ID = 6, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 28, Product_ID = 6, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 29, Product_ID = 6, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 30, Product_ID = 6, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 31, Product_ID = 7, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 32, Product_ID = 7, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 33, Product_ID = 7, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 34, Product_ID = 7, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 35, Product_ID = 7, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 31, Product_ID = 7, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 32, Product_ID = 7, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 33, Product_ID = 7, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 34, Product_ID = 7, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 35, Product_ID = 7, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 36, Product_ID = 8, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 37, Product_ID = 8, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 38, Product_ID = 8, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 39, Product_ID = 8, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 40, Product_ID = 8, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 36, Product_ID = 8, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 37, Product_ID = 8, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 38, Product_ID = 8, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 39, Product_ID = 8, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 40, Product_ID = 8, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 41, Product_ID = 9, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 42, Product_ID = 9, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 43, Product_ID = 9, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 44, Product_ID = 9, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 45, Product_ID = 9, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 41, Product_ID = 9, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 42, Product_ID = 9, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 43, Product_ID = 9, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 44, Product_ID = 9, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 45, Product_ID = 9, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 46, Product_ID = 10, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 47, Product_ID = 10, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 48, Product_ID = 10, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 49, Product_ID = 10, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 50, Product_ID = 10, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 46, Product_ID = 10, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 47, Product_ID = 10, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 48, Product_ID = 10, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 49, Product_ID = 10, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 50, Product_ID = 10, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 51, Product_ID = 11, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 52, Product_ID = 11, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 53, Product_ID = 11, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 54, Product_ID = 11, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 55, Product_ID = 11, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 51, Product_ID = 11, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 52, Product_ID = 11, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 53, Product_ID = 11, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 54, Product_ID = 11, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 55, Product_ID = 11, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 56, Product_ID = 12, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 57, Product_ID = 12, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 58, Product_ID = 12, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 59, Product_ID = 12, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 60, Product_ID = 12, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 56, Product_ID = 12, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 57, Product_ID = 12, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 58, Product_ID = 12, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 59, Product_ID = 12, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 60, Product_ID = 12, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 61, Product_ID = 13, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 62, Product_ID = 13, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 63, Product_ID = 13, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 64, Product_ID = 13, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 65, Product_ID = 13, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 61, Product_ID = 13, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 62, Product_ID = 13, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 63, Product_ID = 13, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 64, Product_ID = 13, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 65, Product_ID = 13, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 66, Product_ID = 14, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 67, Product_ID = 14, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 68, Product_ID = 14, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 69, Product_ID = 14, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 70, Product_ID = 14, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 66, Product_ID = 14, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 67, Product_ID = 14, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 68, Product_ID = 14, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 69, Product_ID = 14, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 70, Product_ID = 14, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 71, Product_ID = 15, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 72, Product_ID = 15, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 73, Product_ID = 15, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 74, Product_ID = 15, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 75, Product_ID = 15, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 71, Product_ID = 15, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 72, Product_ID = 15, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 73, Product_ID = 15, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 74, Product_ID = 15, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 75, Product_ID = 15, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 76, Product_ID = 16, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 77, Product_ID = 16, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 78, Product_ID = 16, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 79, Product_ID = 16, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 80, Product_ID = 16, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 76, Product_ID = 16, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 77, Product_ID = 16, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 78, Product_ID = 16, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 79, Product_ID = 16, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 80, Product_ID = 16, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true },
 
-                        new Price { Price_ID = 81, Product_ID = 17, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 82, Product_ID = 17, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 83, Product_ID = 17, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 84, Product_ID = 17, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 85, Product_ID = 17, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 81, Product_ID = 17, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 82, Product_ID = 17, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 83, Product_ID = 17, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 84, Product_ID = 17, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 85, Product_ID = 17, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 86, Product_ID = 18, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 87, Product_ID = 18, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 88, Product_ID = 18, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 89, Product_ID = 18, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 90, Product_ID = 18, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 86, Product_ID = 18, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 87, Product_ID = 18, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 88, Product_ID = 18, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 89, Product_ID = 18, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 90, Product_ID = 18, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 91, Product_ID = 19, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 92, Product_ID = 19, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 93, Product_ID = 19, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 94, Product_ID = 19, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 95, Product_ID = 19, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 91, Product_ID = 19, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 92, Product_ID = 19, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 93, Product_ID = 19, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 94, Product_ID = 19, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 95, Product_ID = 19, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
 
-                        new Price { Price_ID = 96, Product_ID = 20, Volume_ID = 1, Value=2135 },
-                        new Price { Price_ID = 97, Product_ID = 20, Volume_ID = 2, Value=4235 },
-                        new Price { Price_ID = 98, Product_ID = 20, Volume_ID = 3, Value=4735 },
-                        new Price { Price_ID = 99, Product_ID = 20, Volume_ID = 4, Value=6635 },
-                        new Price { Price_ID = 100, Product_ID = 20, Volume_ID = 5, Value=8735 },
+                        new Price { Price_ID = 96, Product_ID = 20, Volume_ID = 1, Value=2135, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 97, Product_ID = 20, Volume_ID = 2, Value=4235, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 98, Product_ID = 20, Volume_ID = 3, Value=4735, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 99, Product_ID = 20, Volume_ID = 4, Value=6635, PriceDate=DateTime.Now, isActual=true  },
+                        new Price { Price_ID = 100, Product_ID = 20, Volume_ID = 5, Value=8735, PriceDate=DateTime.Now, isActual=true  },
                     });
             });
 
@@ -381,9 +384,24 @@ namespace TonightPerfume.Data
             {
                 builder.ToTable("Orders").HasKey(x => x.Order_ID);
                 builder.Property(x => x.Order_ID).ValueGeneratedOnAdd();
-                builder.HasMany(x => x.Products)
-                       .WithMany(x => x.Orders)
-                       .UsingEntity("OrderProductsGroups");
+            });
+
+            modelBuilder.Entity<OrderProduct>(builder =>
+            {
+                builder.ToTable("OrderProducts").HasKey(x => x.OrderProduct_Id);
+                builder.Property(x => x.OrderProduct_Id).ValueGeneratedOnAdd();
+            });
+
+            modelBuilder.Entity<Profile>(builder =>
+            {
+                builder.ToTable("Profiles").HasKey(x => x.Profile_ID);
+                builder.Property(x => x.Profile_ID).ValueGeneratedOnAdd();
+            });
+
+            modelBuilder.Entity<Adress>(builder =>
+            {
+                builder.ToTable("Adresses").HasKey(x => x.Adress_ID);
+                builder.Property(x => x.Adress_ID).ValueGeneratedOnAdd();
             });
         }
     }

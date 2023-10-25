@@ -1,7 +1,7 @@
 ﻿using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Domain.Models;
 
-namespace TonightPerfume.Data.Repository.Profile
+namespace TonightPerfume.Data.Repository.ProfileR
 {
     public class FavoritesRepository : IRepository<Favorite>
     {

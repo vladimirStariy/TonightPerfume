@@ -9,6 +9,8 @@ namespace TonightPerfume.Domain.Models
         public uint Product_ID { get; set; }
         public uint Volume_ID { get; set; }
         public int Value { get; set; }
+        public DateTime PriceDate { get; set; }
+        public bool isActual { get; set; }
 
         [JsonIgnore]
         [ForeignKey("Product_ID")]
@@ -17,5 +19,8 @@ namespace TonightPerfume.Domain.Models
         [JsonIgnore]
         [ForeignKey("Volume_ID")]
         public virtual Volume? Volume { get; set; }
+
+        [JsonIgnore]
+        public virtual ICollection<OrderProduct> OrderProducts { get; set; }
     }
 }

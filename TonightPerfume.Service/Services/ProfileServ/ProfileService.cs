@@ -1,11 +1,7 @@
 ﻿using TonightPerfume.Data.Repository.BaseRepository;
-using TonightPerfume.Data.Repository.DiscountR;
-using TonightPerfume.Data.Repository.ProductR;
 using TonightPerfume.Domain.Enum;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;
-using TonightPerfume.Domain.Utils;
-using TonightPerfume.Domain.Viewmodels.ProductVM;
 using TonightPerfume.Domain.Viewmodels.ProfileVM;
 
 namespace TonightPerfume.Service.Services.ProfileServ
@@ -76,7 +72,5 @@ namespace TonightPerfume.Service.Services.ProfileServ
                 };
             }
         }
-
-        
     }
 }

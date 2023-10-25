@@ -15,8 +15,12 @@
         public int? Entrance { get; set; }
         public int? Floor { get; set; }
 
+        public string PaymentType { get; set; }
+
         public string DeliveryType { get; set; }
 
         public string? Note { get; set; }
+
+        public List<CartProductDto> products { get; set; }
     }
 }

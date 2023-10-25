@@ -2,7 +2,7 @@
 using TonightPerfume.Data.Repository.DiscountR;
 using TonightPerfume.Data.Repository.OrderR;
 using TonightPerfume.Data.Repository.ProductR;
-using TonightPerfume.Data.Repository.Profile;
+using TonightPerfume.Data.Repository.ProfileR;
 using TonightPerfume.Data.Repository.User;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Service.Services.AccountServ;
@@ -30,6 +30,9 @@ namespace TonightPerfume.API
             services.AddScoped<IRepository<AromaGroup>, AromaGroupRepository>();
             services.AddScoped<IRepository<Favorite>, FavoritesRepository>();
             services.AddScoped<IRepository<Order>, OrderRepository>();
+            services.AddScoped<IRepository<OrderProduct>, OrderProductRepository>();
+            services.AddScoped<IRepository<Profile>, ProfileRepository>();
+            services.AddScoped<IRepository<Adress>, AdressRepository>();
         }
 
         public static void InitializeServices(this IServiceCollection services)
