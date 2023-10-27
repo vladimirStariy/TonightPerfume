@@ -1,4 +1,5 @@
-﻿using TonightPerfume.Data.Repository.BaseRepository;
+﻿using Microsoft.EntityFrameworkCore;
+using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Domain.Models;
 
 namespace TonightPerfume.Data.Repository.ProfileR
@@ -18,19 +19,20 @@ namespace TonightPerfume.Data.Repository.ProfileR
             await _db.SaveChangesAsync();
         }
 
-        public Task Delete(Adress model)
+        public async Task Delete(Adress model)
         {
-            throw new NotImplementedException();
+            _db.Adresses.Remove(model);
+            await _db.SaveChangesAsync();
         }
 
         public IEnumerable<Adress> Get()
         {
-            throw new NotImplementedException();
+            return _db.Adresses;
         }
 
-        public Task<Adress> GetById(uint id)
+        public async Task<Adress> GetById(uint id)
         {
-            throw new NotImplementedException();
+            return await _db.Adresses.Where(x => x.Adress_ID == id).Include(x => x.Profile).FirstOrDefaultAsync();
         }
 
         public Task<Adress> Update(Adress model)

@@ -11,6 +11,7 @@ using TonightPerfume.Service.Services.OrderServ;
 using TonightPerfume.Service.Services.ProductServ;
 using TonightPerfume.Service.Services.ProductServ.Implementations;
 using TonightPerfume.Service.Services.ProductServ.Interfaces;
+using TonightPerfume.Service.Services.ProfileServ;
 using TonightPerfume.Service.Services.UserServ;
 
 namespace TonightPerfume.API
@@ -46,6 +47,7 @@ namespace TonightPerfume.API
             services.AddTransient<IDiscountService, DiscountService>();
             services.AddScoped<IAromaGroupService, AromaGroupService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ProfileService>();
         }
     }
 }

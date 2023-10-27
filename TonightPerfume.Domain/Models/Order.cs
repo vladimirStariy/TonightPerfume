@@ -22,6 +22,8 @@ namespace TonightPerfume.Domain.Models
         public int? Entrance { get; set; }
         public int? Floor { get; set; }
 
+        public string? PostNumber { get; set; }
+
         public string DeliveryType { get; set; }
 
         public string? Note { get; set; }

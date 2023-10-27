@@ -2,6 +2,7 @@
 using TonightPerfume.Domain.Enum;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;
+using TonightPerfume.Domain.Security;
 using TonightPerfume.Domain.Viewmodels.OrderVM;
 
 namespace TonightPerfume.Service.Services.OrderServ
@@ -93,8 +94,10 @@ namespace TonightPerfume.Service.Services.OrderServ
             }
         }
 
-        public async Task<IBaseResponce<string>> CreateOrderAuthorized(OrderRequestDto model)
+        public async Task<IBaseResponce<string>> CreateOrderAuthorized(OrderRequestDto model, string token)
         {
+            var user_id = JwtTokens.GetPayloadUser(token);
+
             try
             {
                 var order = new Order()
@@ -115,8 +118,10 @@ namespace TonightPerfume.Service.Services.OrderServ
                     DeliveryType = model.DeliveryType,
                     PaymentType = model.PaymentType,
                     Note = model.Note,
+                    PostNumber = model.PostNumber,
                     isCanceled = false,
                     isCompleted = false,
+                    User_ID = user_id,
                     OrderProducts = new List<OrderProduct>()
                 };
 

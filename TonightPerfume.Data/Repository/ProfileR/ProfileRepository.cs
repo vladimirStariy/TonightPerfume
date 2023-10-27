@@ -25,7 +25,7 @@ namespace TonightPerfume.Data.Repository.ProfileR
 
         public IEnumerable<Profile> Get()
         {
-            throw new NotImplementedException();
+            return _db.Profiles;
         }
 
         public Task<Profile> GetById(uint id)
@@ -33,9 +33,11 @@ namespace TonightPerfume.Data.Repository.ProfileR
             throw new NotImplementedException();
         }
 
-        public Task<Profile> Update(Profile model)
+        public async Task<Profile> Update(Profile model)
         {
-            throw new NotImplementedException();
+            _db.Profiles.Update(model);
+            await _db.SaveChangesAsync();
+            return model;
         }
     }
 }
