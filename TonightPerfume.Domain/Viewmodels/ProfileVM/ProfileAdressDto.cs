@@ -13,6 +13,8 @@
         public int? Entrance { get; set; }
         public int? Floor { get; set; }
 
+        public int DeliveryType { get; set; }
+
         public string? PostNumber { get; set; }
     }
 }

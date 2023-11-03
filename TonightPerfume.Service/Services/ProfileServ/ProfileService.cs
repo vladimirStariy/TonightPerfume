@@ -35,11 +35,13 @@ namespace TonightPerfume.Service.Services.ProfileServ
             _adressRepository = adressRepository;
         }
 
-        public async Task<IBaseResponce<List<UserOrderCardDto>>> GetOrders(uint id)
+        public async Task<IBaseResponce<List<UserOrderCardDto>>> GetOrders(string token)
         {
             try
             {
-                var orders = _orderRepository.Get().Where(x => x.User_ID == id);
+                var user_id = JwtTokens.GetPayloadUser(token);
+
+                var orders = _orderRepository.Get().Where(x => x.User_ID == user_id);
 
                 if (!orders.Any())
                 {
@@ -130,7 +132,8 @@ namespace TonightPerfume.Service.Services.ProfileServ
                     Entrance = profileAdress.Entrance,
                     Floor = profileAdress.Floor,
                     PostNumber = profileAdress.PostNumber,
-                    Profile_ID = profile_id
+                    Profile_ID = profile_id,
+                    DeliveryType = profileAdress.DeliveryType
                 };
 
                 await _adressRepository.Create(adress);
@@ -210,6 +213,7 @@ namespace TonightPerfume.Service.Services.ProfileServ
                         Entrance = adress.Entrance,
                         Floor = adress.Floor,
                         PostNumber = adress.PostNumber,
+                        DeliveryType = adress.DeliveryType,
                     };
                     profileData.ProfileAdresses.Add(profileAdress);
                 }

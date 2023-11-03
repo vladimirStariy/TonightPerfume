@@ -30,6 +30,8 @@ namespace TonightPerfume.Domain.Models
 
         public string? PaymentType { get; set; }
 
+        public string Promocode { get; set; }
+
         public int? SummaryPrice { get; set; }
 
         public bool isCompleted { get; set; } = false;
@@ -38,6 +40,7 @@ namespace TonightPerfume.Domain.Models
         public DateTime? OrderCompleteDate { get; set; }
 
         public uint? User_ID { get; set; }
+        
 
         [JsonIgnore]
         public virtual ICollection<OrderProduct> OrderProducts { get; set; }

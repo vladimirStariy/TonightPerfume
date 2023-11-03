@@ -18,6 +18,8 @@ namespace TonightPerfume.Domain.Models
 
         public string? PostNumber { get; set; }
 
+        public int DeliveryType { get; set; }
+
         public uint Profile_ID { get; set; }
 
         [JsonIgnore]

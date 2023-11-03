@@ -19,11 +19,38 @@ namespace TonightPerfume.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("create-order")]
-        public async Task<IActionResult> CreateOrder(OrderRequestDto model)
+        [HttpPost("create-order-unauthorized")]
+        public async Task<IActionResult> CreateOrderUnauthorized(OrderRequestDto model)
+        {
+            var token = HttpContext.Request.Cookies["refreshToken"];
+
+            if(token == null)
+            {
+                var response = await _orderService.CreateOrderUnauthorized(model);
+                return Ok(response);
+            } 
+            else
+            {
+                var response = await _orderService.CreateOrderAuthorized(model, token);
+                return Ok(response);
+            }
+
+        }
+
+        [Authorize]
+        [HttpPost("create-order-authorized")]
+        public async Task<IActionResult> CreateOrderAuthorized(OrderRequestDto model)
         {
             var response = await _orderService.CreateOrderUnauthorized(model);
             return Ok(response);
+        }
+
+        [HttpPost("get-promocode-data")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPromocodeData(PromocodeDto model)
+        {
+            var response = await _orderService.GetPromocodeData(model.promocode);
+            return Ok(response.Result);
         }
     }
 }

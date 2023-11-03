@@ -93,18 +93,11 @@ namespace TonightPerfume.API.Controllers
             if(token != null)
             {
                 var response = await _accountService.RefreshToken(token);
+                
                 HttpContext.Response.Cookies.Append("refreshToken", response.Result["refreshToken"],
                     new CookieOptions()
                     {
                         HttpOnly = true,
-                        SameSite = SameSiteMode.None,
-                        Secure = true,
-                        Expires = DateTime.Now.AddDays(30)
-                    });
-                HttpContext.Response.Cookies.Append("is_auth", "true",
-                    new CookieOptions()
-                    {
-                        HttpOnly = false,
                         SameSite = SameSiteMode.None,
                         Secure = true,
                         Expires = DateTime.Now.AddDays(30)

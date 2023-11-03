@@ -23,6 +23,8 @@
 
         public string? Note { get; set; }
 
+        public string? promocode { get; set; } = null;
+
         public List<CartProductDto> products { get; set; }
     }
 }

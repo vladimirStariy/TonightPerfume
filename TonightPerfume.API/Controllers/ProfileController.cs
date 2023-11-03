@@ -22,7 +22,9 @@ namespace TonightPerfume.API.Controllers
         [HttpGet("orders")]
         public async Task<IActionResult> Orders()
         {
-            return Ok(new ProfileTestDto() { response = "Success" });
+            var token = HttpContext.Request.Cookies["refreshToken"];
+            var response = await _profileService.GetOrders(token);
+            return Ok(response.Result);
         }
 
         [HttpGet("profile-data")]

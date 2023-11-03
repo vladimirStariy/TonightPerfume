@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using TonightPerfume.Domain.Models;
 
 namespace TonightPerfume.Data
@@ -26,6 +27,7 @@ namespace TonightPerfume.Data
         public DbSet<OrderProduct> OrderProducts { get; set; }
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<Adress> Adresses { get; set; }
+        public DbSet<Promocode> Promocodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -402,6 +404,17 @@ namespace TonightPerfume.Data
             {
                 builder.ToTable("Adresses").HasKey(x => x.Adress_ID);
                 builder.Property(x => x.Adress_ID).ValueGeneratedOnAdd();
+            });
+
+            modelBuilder.Entity<Promocode>(builder =>
+            {
+                builder.ToTable("Promocodes").HasKey(x => x.Promocode_ID);
+                builder.Property(x => x.Promocode_ID).ValueGeneratedOnAdd();
+                builder.HasData(
+                    new Promocode[]
+                    {
+                        new Promocode {Promocode_ID = 1, PromocodeBody = "TEST_PROMOCODE", Value = "10", UsingQuantity = 99999, Circulation = 300, ExpirationDate = DateTime.UtcNow.AddDays(30) },
+                    });
             });
         }
     }

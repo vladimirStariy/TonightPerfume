@@ -344,12 +344,15 @@ namespace TonightPerfume.Service.Services.ProductServ
                 foreach (var item in filteredProducts)
                 {
                     var _price = 0;
+                    List<Price> _prices = null;
                     try
                     {
                         _price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value);
+                        _prices = prices.Where(x => x.Product_ID == item.Product_ID).ToList();
                     }
                     catch
                     {
+                        _prices = null;
                         _price = 0;
                     }
 
@@ -366,6 +369,7 @@ namespace TonightPerfume.Service.Services.ProductServ
                         Name = item.Name,
                         Brand = item.Brand.Name,
                         Price = _price,
+                        Prices = _prices,
                         isFavorite = isFavorite,
                     };
 

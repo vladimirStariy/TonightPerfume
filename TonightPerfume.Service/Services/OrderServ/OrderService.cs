@@ -11,20 +11,26 @@ namespace TonightPerfume.Service.Services.OrderServ
     {
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<Product> _productRepository;
+        private readonly IRepository<Promocode> _promocodeRepository;
         private readonly IRepository<Price> _priceRepository;
         private readonly IRepository<OrderProduct> _orderProductRepository;
+        private readonly IRepository<Discount> _discountRepository;
 
         public OrderService(
             IRepository<Order> orderRepository,
             IRepository<Product> productRepository,
             IRepository<Price> priceRepository,
-            IRepository<OrderProduct> orderProductRepository
+            IRepository<OrderProduct> orderProductRepository,
+            IRepository<Promocode> promocodeRepository,
+            IRepository<Discount> discountRepository
         ) 
         { 
             _orderRepository = orderRepository;
             _productRepository = productRepository;
             _priceRepository = priceRepository;
             _orderProductRepository = orderProductRepository;
+            _promocodeRepository = promocodeRepository;
+            _discountRepository = discountRepository;
         }
 
         public async Task<IBaseResponce<string>> CreateOrderUnauthorized(OrderRequestDto model)
@@ -46,9 +52,11 @@ namespace TonightPerfume.Service.Services.OrderServ
                     DomophoneCode = model.DomophoneCode,
                     Entrance = model.Entrance,
                     Floor = model.Floor,
+                    PostNumber = model.PostNumber,
                     DeliveryType = model.DeliveryType,
                     Note = model.Note,
                     PaymentType = model.PaymentType,
+                    Promocode = model.promocode,
                     isCanceled = false,
                     isCompleted = false,
                     OrderProducts = new List<OrderProduct>()
@@ -57,12 +65,42 @@ namespace TonightPerfume.Service.Services.OrderServ
                 await _orderRepository.Create(order);
 
                 int summaryPrice = 0;
+                int promocodeDiscount = 0;
+
+                if(model.promocode != null || model.promocode != "")
+                {
+                    var currPromocode = _promocodeRepository.Get().Where(x => x.PromocodeBody == model.promocode).FirstOrDefault();
+                    if(currPromocode != null) 
+                    {
+                        promocodeDiscount = Convert.ToInt32(currPromocode.Value);
+                    }
+                }
                 foreach(var item in model.products)
                 {
-                    var product = _priceRepository.Get().Where(x => x.Product_ID == item.product_id && 
-                                                                    x.Volume_ID == item.volume_id).FirstOrDefault();
+                    var product = _priceRepository.Get().Where(x => x.Product_ID == item.productId && 
+                                                                    x.Volume_ID == item.volumeId).FirstOrDefault();
 
-                    summaryPrice = summaryPrice + (product.Value * item.quantity);
+                    var productDiscount = _discountRepository.Get().Where(x => x.Product_ID == item.productId).FirstOrDefault();
+                    
+                    int productPrice = product.Value;
+
+                    if(productDiscount != null)
+                    {
+                        if(productDiscount.Value > promocodeDiscount || productDiscount.Value == promocodeDiscount)
+                        {
+                            productPrice = productPrice - ((productPrice / 100) * productDiscount.Value);
+                        }
+                        else
+                        {
+                            productPrice = productPrice - ((productPrice / 100) * promocodeDiscount);
+                        }
+                    }
+                    else if(productDiscount == null)
+                    {
+                        productPrice = productPrice - ((productPrice / 100) * promocodeDiscount);
+                    }
+
+                    summaryPrice = summaryPrice + (productPrice * item.quantity);
 
                     var orderProduct = new OrderProduct() { 
                         Order_ID = order.Order_ID,
@@ -119,6 +157,7 @@ namespace TonightPerfume.Service.Services.OrderServ
                     PaymentType = model.PaymentType,
                     Note = model.Note,
                     PostNumber = model.PostNumber,
+                    Promocode = model.promocode,
                     isCanceled = false,
                     isCompleted = false,
                     User_ID = user_id,
@@ -128,12 +167,42 @@ namespace TonightPerfume.Service.Services.OrderServ
                 await _orderRepository.Create(order);
 
                 int summaryPrice = 0;
+                int promocodeDiscount = 0;
+
+                if (model.promocode != null || model.promocode != "")
+                {
+                    var currPromocode = _promocodeRepository.Get().Where(x => x.PromocodeBody == model.promocode).FirstOrDefault();
+                    if (currPromocode != null)
+                    {
+                        promocodeDiscount = Convert.ToInt32(currPromocode.Value);
+                    }
+                }
                 foreach (var item in model.products)
                 {
-                    var product = _priceRepository.Get().Where(x => x.Product_ID == item.product_id &&
-                                                                    x.Volume_ID == item.volume_id).FirstOrDefault();
+                    var product = _priceRepository.Get().Where(x => x.Product_ID == item.productId &&
+                                                                    x.Volume_ID == item.volumeId).FirstOrDefault();
 
-                    summaryPrice = summaryPrice + (product.Value * item.quantity);
+                    var productDiscount = _discountRepository.Get().Where(x => x.Product_ID == item.productId).FirstOrDefault();
+
+                    int productPrice = product.Value;
+
+                    if (productDiscount != null)
+                    {
+                        if (productDiscount.Value > promocodeDiscount || productDiscount.Value == promocodeDiscount)
+                        {
+                            productPrice = productPrice - ((productPrice / 100) * productDiscount.Value);
+                        }
+                        else
+                        {
+                            productPrice = productPrice - ((productPrice / 100) * promocodeDiscount);
+                        }
+                    }
+                    else if (productDiscount == null)
+                    {
+                        productPrice = productPrice - ((productPrice / 100) * promocodeDiscount);
+                    }
+
+                    summaryPrice = summaryPrice + (productPrice * item.quantity);
 
                     var orderProduct = new OrderProduct()
                     {
@@ -157,6 +226,51 @@ namespace TonightPerfume.Service.Services.OrderServ
                 };
             }
             catch (Exception ex)
+            {
+                return new Response<string>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<IBaseResponce<string>> GetPromocodeData(string promocode)
+        {
+            try
+            {
+                var currPromocode = _promocodeRepository.Get().Where(x => x.PromocodeBody == promocode).FirstOrDefault();
+                if (currPromocode != null)
+                {
+                    var expirationResult = DateTime.Compare(currPromocode.ExpirationDate, DateTime.UtcNow);
+                    if(expirationResult > 0)
+                    {
+                        return new Response<string>()
+                        {
+                            Result = currPromocode.Value,
+                            Description = "ОК",
+                            StatusCode = StatusCode.OK
+                        };
+                    } 
+                    else
+                    {
+                        return new Response<string>()
+                        {
+                            StatusCode = StatusCode.InternalServerError,
+                            Description = $"Промокод просрочен."
+                        };
+                    }
+                }
+                else
+                {
+                    return new Response<string>()
+                    {
+                        StatusCode = StatusCode.InternalServerError,
+                        Description = $"Промокод не найден."
+                    };
+                }
+            }
+            catch (Exception ex) 
             {
                 return new Response<string>()
                 {
