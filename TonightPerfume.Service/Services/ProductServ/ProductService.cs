@@ -168,7 +168,10 @@ namespace TonightPerfume.Service.Services.ProductServ
                     Description = product.Description,
                     Prices = prices.ToList(),
                     Brand = product.Brand,
+                    Country = product.Country,
+                    Year = product.Year,
                     Category = product.Category,
+                    
                     PerfumeNotes = product.PerfumeNotes
                 };
 

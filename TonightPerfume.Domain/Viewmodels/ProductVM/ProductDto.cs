@@ -12,6 +12,7 @@ namespace TonightPerfume.Domain.Viewmodels.ProductVM
         public string Country { get; set; }
         public Category Category { get; set; }
         public Brand Brand { get; set; }
-        public ICollection<PerfumeNote> PerfumeNotes { get; set; }
+        public ICollection<AromaGroup> AromaGroups { get; set; } = new List<AromaGroup>();
+        public ICollection<PerfumeNote> PerfumeNotes { get; set; } = new List<PerfumeNote>();
     }
 }
