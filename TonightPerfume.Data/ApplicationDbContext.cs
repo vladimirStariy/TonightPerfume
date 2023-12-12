@@ -21,6 +21,7 @@ namespace TonightPerfume.Data
         public DbSet<AromaGroup> AromaGroups { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Volume> Volumes { get; set; }
+        public DbSet<AtomizerColor> AtomizerColors { get; set; }
         public DbSet<Price> Prices { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -414,6 +415,50 @@ namespace TonightPerfume.Data
                     new Promocode[]
                     {
                         new Promocode {Promocode_ID = 1, PromocodeBody = "TEST_PROMOCODE", Value = "10", UsingQuantity = 99999, Circulation = 300, ExpirationDate = DateTime.UtcNow.AddDays(30) },
+                    });
+            });
+
+            modelBuilder.Entity<AtomizerColor>(builder =>
+            {
+                builder.ToTable("AtomizerColors").HasKey(x => x.AtomizerColor_ID);
+                builder.Property(x => x.AtomizerColor_ID).ValueGeneratedOnAdd();
+                builder.HasData(
+                    new AtomizerColor[]
+                    {
+                        new AtomizerColor { AtomizerColor_ID = 1, Volume_ID = 1, Color = "black" },
+                        new AtomizerColor { AtomizerColor_ID = 2, Volume_ID = 1, Color = "pink" },
+                        new AtomizerColor { AtomizerColor_ID = 3, Volume_ID = 1, Color = "gold" },
+                        new AtomizerColor { AtomizerColor_ID = 4, Volume_ID = 1, Color = "blue" },
+                        new AtomizerColor { AtomizerColor_ID = 5, Volume_ID = 1, Color = "red" },
+                        new AtomizerColor { AtomizerColor_ID = 6, Volume_ID = 1, Color = "grey" },
+
+                        new AtomizerColor { AtomizerColor_ID = 7, Volume_ID = 2, Color = "black" },
+                        new AtomizerColor { AtomizerColor_ID = 8, Volume_ID = 2, Color = "pink" },
+                        new AtomizerColor { AtomizerColor_ID = 9, Volume_ID = 2, Color = "gold" },
+                        new AtomizerColor { AtomizerColor_ID = 10, Volume_ID = 2, Color = "blue" },
+                        new AtomizerColor { AtomizerColor_ID = 11, Volume_ID = 2, Color = "red" },
+                        new AtomizerColor { AtomizerColor_ID = 12, Volume_ID = 2, Color = "grey" },
+
+                        new AtomizerColor { AtomizerColor_ID = 13, Volume_ID = 3, Color = "black" },
+                        new AtomizerColor { AtomizerColor_ID = 14, Volume_ID = 3, Color = "pink" },
+                        new AtomizerColor { AtomizerColor_ID = 15, Volume_ID = 3, Color = "gold" },
+                        new AtomizerColor { AtomizerColor_ID = 16, Volume_ID = 3, Color = "blue" },
+                        new AtomizerColor { AtomizerColor_ID = 17, Volume_ID = 3, Color = "red" },
+                        new AtomizerColor { AtomizerColor_ID = 18, Volume_ID = 3, Color = "grey" },
+
+                        new AtomizerColor { AtomizerColor_ID = 19, Volume_ID = 4, Color = "black" },
+                        new AtomizerColor { AtomizerColor_ID = 20, Volume_ID = 4, Color = "pink" },
+                        new AtomizerColor { AtomizerColor_ID = 21, Volume_ID = 4, Color = "gold" },
+                        new AtomizerColor { AtomizerColor_ID = 22, Volume_ID = 4, Color = "blue" },
+                        new AtomizerColor { AtomizerColor_ID = 23, Volume_ID = 4, Color = "red" },
+                        new AtomizerColor { AtomizerColor_ID = 24, Volume_ID = 4, Color = "grey" },
+
+                        new AtomizerColor { AtomizerColor_ID = 25, Volume_ID = 5, Color = "black" },
+                        new AtomizerColor { AtomizerColor_ID = 26, Volume_ID = 5, Color = "pink" },
+                        new AtomizerColor { AtomizerColor_ID = 27, Volume_ID = 5, Color = "gold" },
+                        new AtomizerColor { AtomizerColor_ID = 28, Volume_ID = 5, Color = "blue" },
+                        new AtomizerColor { AtomizerColor_ID = 29, Volume_ID = 5, Color = "red" },
+                        new AtomizerColor { AtomizerColor_ID = 30, Volume_ID = 5, Color = "grey" },
                     });
             });
         }

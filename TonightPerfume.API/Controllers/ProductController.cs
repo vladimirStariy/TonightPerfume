@@ -75,7 +75,12 @@ namespace TonightPerfume.API.Controllers
         [HttpPost("filter-requ")]
         public async Task<ICollection<ProductCardDto>> GetFilteredData(FilterRequestDto model)
         {
-            var token = HttpContext.Request.Cookies["refreshToken"];
+            string token = "";
+            try
+            {
+                token = HttpContext.Request.Cookies["refreshToken"];
+            }
+            catch { }
             var response = await _productService.GetFilteredProductsWithPagination(model, token);
 
             if(response.Result != null)

@@ -200,7 +200,10 @@ namespace TonightPerfume.Service.Services.ProductServ
                 var brands = _brandRepository.Get().ToList().OrderBy(x => x.Name).Take(count);
                 var categories = _categoryRepository.Get();
                 var notes = _perfumeNotesRepository.Get().ToList().OrderBy(x => x.Name).Take(count);
-                var countries = _productRepository.Get().ToList().OrderBy(x => x.Country).Select(x => x.Country).Take(count);
+                var countries = _productRepository.Get().ToList().OrderBy(x => x.Country).Select(x => x.Country).Distinct().Take(count);
+                var prices = _priceRepository.Get().ToList();
+                var minPrice = prices.Min(x => x.Value);
+                var maxPrice = prices.Max(x => x.Value);
 
                 FilterDto filterDto = new FilterDto()
                 {
@@ -313,9 +316,17 @@ namespace TonightPerfume.Service.Services.ProductServ
                 {
                     products = products.Where(x => x.AromaGroups.Any(y => model.AromaGroups.Contains((int)y.AromaGroup_ID)));
                 }
+                if (model.Countries.Count > 0)
+                {
+                    products = products.Where(x => model.Countries.Contains(x.Country));
+                }
                 if (model.Prices.Length > 0)
                 {
-                    prices = _priceRepository.Get().Where(x => x.Value >= model.Prices[0] && x.Value <= model.Prices[1]).ToList();
+                    prices = _priceRepository.Get().Where(x => x.Value / 100 >= model.Prices[0] && x.Value/100 <= model.Prices[1]).ToList();
+                    if(model.Volumes.Count > 0)
+                    {
+                        prices = prices.Where(x => model.Volumes.Contains(x.Volume.Value)).ToList();
+                    }
                     products = products.Where(x => prices.Any(y => x.Product_ID == y.Product_ID));
                 } 
                 else

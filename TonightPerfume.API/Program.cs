@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using TonightPerfume.API;
 using TonightPerfume.Data;
@@ -11,20 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DesktopLocalPolicy", builder => builder
-                       .WithOrigins("https://localhost:3000", "http://localhost:3000")
+                       .WithOrigins("https://upbeat-moore.178-124-131-24.plesk.page", "http://localhost:3000", "https://localhost:3000")
                        .AllowAnyHeader()
+                       .AllowAnyMethod()
                        .WithExposedHeaders()
-                       .AllowAnyMethod()
                        .AllowCredentials());
-    options.AddPolicy("MobileLocalPolicy", builder => builder
-                       .WithOrigins("https://192.168.100.4:3000")
-                       .AllowAnyHeader()
-                       .AllowAnyMethod());
-    options.AddPolicy("AllowAllPolicy", builder => builder
-                       .AllowAnyOrigin()
-                       .AllowAnyHeader()
-                       .AllowAnyMethod()
-                       .WithExposedHeaders());
 });
 
 builder.Services.AddControllers();
@@ -47,17 +37,6 @@ builder.Services.AddAuthentication(options =>
     {
         options.IncludeErrorDetails = true;
         options.TokenValidationParameters = SecurityConfig.GetValidationParameters();
-
-        //new TokenValidationParameters
-        //{
-        //    ValidateIssuer = true,
-        //    ValidIssuer = SecurityConfig.ISSUER,
-        //    ValidateAudience = true,
-        //    ValidAudience = SecurityConfig.AUDIENCE,
-        //    ValidateLifetime = true,
-        //    IssuerSigningKey = SecurityConfig.GetSymmetricAccessKey(),
-        //    ValidateIssuerSigningKey = true
-        //};
     });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -91,7 +70,7 @@ builder.Services.AddSwaggerGen(option =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -100,12 +79,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
+
+app.UseRouting();
+
 app.UseCors("DesktopLocalPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapControllers();
+
+//app.MapFallbackToFile("index.html");
 
 app.Run();

@@ -35,6 +35,7 @@ namespace TonightPerfume.API
             services.AddScoped<IRepository<Profile>, ProfileRepository>();
             services.AddScoped<IRepository<Adress>, AdressRepository>();
             services.AddScoped<IRepository<Promocode>, PromocodeRepository>();
+            services.AddScoped<IRepository<AtomizerColor>, AtomizerColorRepository>();
         }
 
         public static void InitializeServices(this IServiceCollection services)
