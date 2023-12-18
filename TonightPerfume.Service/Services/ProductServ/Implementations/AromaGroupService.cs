@@ -70,6 +70,38 @@ namespace TonightPerfume.Service.Services.ProductServ.Implementations
             }
         }
 
+        public async Task<IBaseResponce<List<AromaGroup>>> GetSortedGroups()
+        {
+            try
+            {
+                var groups = _aromaGroupRepository.Get().ToList().OrderBy(x => x.AromaGroup_Name);
+
+                if (!groups.Any())
+                {
+                    return new Response<List<AromaGroup>>()
+                    {
+                        Description = "Not found",
+                        StatusCode = StatusCode.OK
+                    };
+                }
+
+                return new Response<List<AromaGroup>>()
+                {
+                    Result = groups.ToList(),
+                    Description = "Объект добавлен",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<List<AromaGroup>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
         public async Task<IBaseResponce<List<AromaGroup>>> GetSomeGroups(int count)
         {
             try

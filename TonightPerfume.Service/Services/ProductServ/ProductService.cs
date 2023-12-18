@@ -192,6 +192,37 @@ namespace TonightPerfume.Service.Services.ProductServ
             }
         }
 
+        public async Task<IBaseResponce<List<countryvm>>> GetSortedCountries()
+        {
+            try
+            {
+                var countries = _productRepository.Get().ToList().OrderBy(x => x.Country).Select(x => x.Country).Distinct();
+
+                List<countryvm> countriesDto = new List<countryvm>();
+                foreach(var item in countries)
+                {
+                    countryvm countryDto = new countryvm();
+                    countryDto.name = item;
+                    countriesDto.Add(countryDto);
+                }
+
+                return new Response<List<countryvm>>()
+                {
+                    Result = countriesDto,
+                    Description = "OK",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<List<countryvm>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
         public async Task<IBaseResponce<FilterDto>> GetFilter(int count)
         {
             try
@@ -212,12 +243,14 @@ namespace TonightPerfume.Service.Services.ProductServ
                     Categories = categories.ToList(),
                     PerfumeNotes = notes.ToList(),
                     Countries = countries.ToList(),
+                    MinPrice = minPrice,
+                    MaxPrice = maxPrice,
                 };
 
                 return new Response<FilterDto>()
                 {
                     Result = filterDto,
-                    Description = "Объект добавлен",
+                    Description = "OK",
                     StatusCode = StatusCode.OK
                 };
             }
@@ -291,6 +324,65 @@ namespace TonightPerfume.Service.Services.ProductServ
             }
         }
 
+        public async Task<IBaseResponce<List<ProductCardDto>>> GetPopularProducts()
+        {
+            try
+            {
+                var products = _productRepository.Get().Where(x => x.isPopular).ToList();
+                var productCardDtos = new List<ProductCardDto>();
+                var prices = _priceRepository.Get();
+
+                if (!products.Any())
+                {
+                    return new Response<List<ProductCardDto>>()
+                    {
+                        Description = "Not found",
+                        StatusCode = StatusCode.OK
+                    };
+                }
+
+                var discounts = _discountRepository.Get().ToList();
+
+                foreach (var item in products)
+                {
+                    var productDto = new ProductCardDto()
+                    {
+                        Id = item.Product_ID,
+                        Name = item.Name,
+                        Brand = item.Brand.Name,
+                        Price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value),
+                        Prices = prices.Where(x => x.Product_ID == item.Product_ID).ToList()
+                    };
+
+                    if (!discounts.Any())
+                    {
+                        productDto.Discount = 0;
+                    }
+                    else
+                    {
+                        productDto.Discount = discounts.Where(x => x.Product_ID == item.Product_ID).Select(x => x.Value).FirstOrDefault();
+                    }
+
+                    productCardDtos.Add(productDto);
+                }
+
+                return new Response<List<ProductCardDto>>()
+                {
+                    Result = productCardDtos,
+                    Description = "Продукт добавлен",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<List<ProductCardDto>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
         public async Task<IBaseResponce<PagedList<ProductCardDto>>> GetFilteredProductsWithPagination(FilterRequestDto model, string token)
         {
             try
@@ -322,7 +414,7 @@ namespace TonightPerfume.Service.Services.ProductServ
                 }
                 if (model.Prices.Length > 0)
                 {
-                    prices = _priceRepository.Get().Where(x => x.Value / 100 >= model.Prices[0] && x.Value/100 <= model.Prices[1]).ToList();
+                    prices = _priceRepository.Get().Where(x => x.Value >= model.Prices[0] && x.Value <= model.Prices[1]).ToList();
                     if(model.Volumes.Count > 0)
                     {
                         prices = prices.Where(x => model.Volumes.Contains(x.Volume.Value)).ToList();

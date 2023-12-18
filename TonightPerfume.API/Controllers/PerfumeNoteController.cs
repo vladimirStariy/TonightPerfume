@@ -26,6 +26,14 @@ namespace TonightPerfume.API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("sorted-notes")]
+        public async Task<List<PerfumeNote>> GetSortedNotes()
+        {
+            var response = await _perfumeNoteService.GetSortedNotes();
+            return response.Result;
+        }
+
+        [AllowAnonymous]
         [HttpPost("create-note")]
         public async Task<PerfumeNote> Create(PerfumeNote model)
         {

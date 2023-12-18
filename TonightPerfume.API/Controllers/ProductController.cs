@@ -134,5 +134,21 @@ namespace TonightPerfume.API.Controllers
             return Ok(response.Result);
         }
 
+        [AllowAnonymous]
+        [HttpGet("sorted-countries")]
+        public async Task<List<countryvm>> GetSortedCountries()
+        {
+            var response = await _productService.GetSortedCountries();
+            return response.Result;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("popular-products")]
+        public async Task<ICollection<ProductCardDto>> GetPopularProducts()
+        {
+            var response = await _productService.GetPopularProducts();
+            return response.Result;
+        }
+
     }
 }

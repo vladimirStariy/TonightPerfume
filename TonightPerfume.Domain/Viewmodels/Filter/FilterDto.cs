@@ -9,5 +9,7 @@ namespace TonightPerfume.Domain.Viewmodels.Filter
         public List<Category> Categories { get; set; }
         public List<PerfumeNote> PerfumeNotes { get; set; }
         public List<string> Countries { get; set; }
+        public int MinPrice { get; set; }
+        public int MaxPrice { get; set; }
     }
 }

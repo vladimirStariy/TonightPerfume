@@ -18,5 +18,7 @@ namespace TonightPerfume.Service.Services.ProductServ
         Task<IBaseResponce<PagedList<ProductCardDto>>> GetFavorites(FavoriteRequestDto model);
         Task<IBaseResponce<string>> AddFavorite(uint product_id, string token);
         Task<IBaseResponce<string>> RemoveFavorite(uint product_id, string token);
+        Task<IBaseResponce<List<countryvm>>> GetSortedCountries();
+        Task<IBaseResponce<List<ProductCardDto>>> GetPopularProducts();
     }
 }

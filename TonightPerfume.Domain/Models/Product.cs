@@ -14,6 +14,8 @@ namespace TonightPerfume.Domain.Models
         public string Country { get; set; }
         public string Year { get; set; }
 
+        public bool isPopular { get; set; } = false;
+
         public string Description { get; set; }
 
         [ForeignKey("Category_ID")]

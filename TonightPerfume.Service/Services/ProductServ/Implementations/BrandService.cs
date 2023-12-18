@@ -100,5 +100,37 @@ namespace TonightPerfume.Service.Services.ProductServ.Implementations
                 };
             }
         }
+
+        public async Task<IBaseResponce<List<Brand>>> GetSortedBrands()
+        {
+            try
+            {
+                var brands = _brandRepository.Get().ToList().OrderBy(x => x.Name);
+
+                if (!brands.Any())
+                {
+                    return new Response<List<Brand>>()
+                    {
+                        Description = "Not found",
+                        StatusCode = StatusCode.OK
+                    };
+                }
+
+                return new Response<List<Brand>>()
+                {
+                    Result = brands.ToList(),
+                    Description = "Объект добавлен",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<List<Brand>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
     }
 }

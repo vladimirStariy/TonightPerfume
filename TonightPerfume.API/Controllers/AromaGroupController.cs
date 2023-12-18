@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TonightPerfume.Domain.Models;
+using TonightPerfume.Service.Services.ProductServ.Implementations;
 using TonightPerfume.Service.Services.ProductServ.Interfaces;
 
 namespace TonightPerfume.API.Controllers
@@ -22,6 +23,14 @@ namespace TonightPerfume.API.Controllers
         public async Task<List<AromaGroup>> Get()
         {
             var response = await _aromaGroupService.Get();
+            return response.Result;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("sorted-groups")]
+        public async Task<List<AromaGroup>> GetSortedNotes()
+        {
+            var response = await _aromaGroupService.GetSortedGroups();
             return response.Result;
         }
 

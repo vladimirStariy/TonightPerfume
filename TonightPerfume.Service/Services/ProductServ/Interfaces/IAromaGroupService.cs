@@ -8,5 +8,6 @@ namespace TonightPerfume.Service.Services.ProductServ.Interfaces
         Task<IBaseResponce<AromaGroup>> Create(AromaGroup model);
         Task<IBaseResponce<List<AromaGroup>>> Get();
         Task<IBaseResponce<List<AromaGroup>>> GetSomeGroups(int count);
+        Task<IBaseResponce<List<AromaGroup>>> GetSortedGroups();
     }
 }

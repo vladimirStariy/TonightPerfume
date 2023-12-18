@@ -38,6 +38,38 @@ namespace TonightPerfume.Service.Services.ProductServ.Implementations
             }
         }
 
+        public async Task<IBaseResponce<List<PerfumeNote>>> GetSortedNotes()
+        {
+            try
+            {
+                var notes = _perfumeNoteRepository.Get().ToList().OrderBy(x => x.Name);
+
+                if (!notes.Any())
+                {
+                    return new Response<List<PerfumeNote>>()
+                    {
+                        Description = "Not found",
+                        StatusCode = StatusCode.OK
+                    };
+                }
+
+                return new Response<List<PerfumeNote>>()
+                {
+                    Result = notes.ToList(),
+                    Description = "Объект добавлен",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<List<PerfumeNote>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
         public async Task<IBaseResponce<List<PerfumeNote>>> Get()
         {
             try
