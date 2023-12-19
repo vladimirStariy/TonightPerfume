@@ -64,5 +64,12 @@ namespace TonightPerfume.API.Controllers
         {
             return Ok(new ProfileTestDto() { response = "Success" });
         }
+
+        [HttpGet("order-product")]
+        public async Task<IActionResult> GetOrderProducts(uint orderId)
+        {
+            var response = await _profileService.GetOrderProducts(orderId);
+            return Ok(response.Result);
+        }
     }
 }

@@ -17,10 +17,12 @@ namespace TonightPerfume.Service.Services.ProfileServ
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<Price> _priceRepository;
         private readonly IRepository<Discount> _discountRepository;
+        private readonly IRepository<OrderProduct> _orderProductRepository;
 
         public ProfileService(
             IRepository<Order> orderRepository,
-            IRepository<Favorite> favoritesRepository, 
+            IRepository<OrderProduct> orderProductRepository,
+            IRepository<Favorite> favoritesRepository,
             IRepository<Product> productRepository,
             IRepository<Price> priceRepository,
             IRepository<Profile> profileRepository,
@@ -33,6 +35,7 @@ namespace TonightPerfume.Service.Services.ProfileServ
             _priceRepository = priceRepository;
             _profileRepository = profileRepository;
             _adressRepository = adressRepository;
+            _orderProductRepository = orderProductRepository;
         }
 
         public async Task<IBaseResponce<List<UserOrderCardDto>>> GetOrders(string token)
@@ -53,10 +56,11 @@ namespace TonightPerfume.Service.Services.ProfileServ
                 }
 
                 List<UserOrderCardDto> orderCards = new List<UserOrderCardDto>();
-                foreach(var item in orders)
+                foreach (var item in orders)
                 {
                     UserOrderCardDto card = new UserOrderCardDto()
                     {
+                        OrderId = item.Order_ID,
                         OrderDate = item.Order_date,
                         OrderPrice = (int)item.SummaryPrice,
                     };
@@ -76,6 +80,42 @@ namespace TonightPerfume.Service.Services.ProfileServ
             catch (Exception ex)
             {
                 return new Response<List<UserOrderCardDto>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<IBaseResponce<List<OrderProductDto>>> GetOrderProducts(uint orderId) 
+        {
+            try
+            {               
+                var orderProductsDto = new List<OrderProductDto>();
+                var orderProducts = _orderProductRepository.Get().Where(x => x.Order_ID == orderId);
+                foreach(var orderProduct in orderProducts)
+                {
+                    OrderProductDto product = new OrderProductDto()
+                    {
+                        productId = orderProduct.Price.Product_ID,
+                        quantity = orderProduct.Quantity,
+                        productBrand = orderProduct.Price.Product.Brand.Name,
+                        productName = orderProduct.Price.Product.Name,
+                        price = orderProduct.Quantity * orderProduct.Price.Value
+                    };
+                    orderProductsDto.Add(product);
+                }
+
+                return new Response<List<OrderProductDto>>()
+                {
+                    Result = orderProductsDto,
+                    Description = "Ok",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<List<OrderProductDto>>()
                 {
                     StatusCode = StatusCode.InternalServerError,
                     Description = $"Внутренняя ошибка: {ex.Message}"

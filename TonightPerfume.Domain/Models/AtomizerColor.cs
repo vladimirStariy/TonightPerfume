@@ -7,7 +7,7 @@ namespace TonightPerfume.Domain.Models
     {
         public uint AtomizerColor_ID { get; set; }
         public string Color { get; set; }
-
+        public string ImagePath { get; set; } = "";
         public uint Volume_ID { get; set; }
         [JsonIgnore]
         [ForeignKey("Volume_ID")]

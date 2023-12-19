@@ -1,4 +1,5 @@
-﻿using TonightPerfume.Data.Repository.BaseRepository;
+﻿using Microsoft.EntityFrameworkCore;
+using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Domain.Models;
 
 namespace TonightPerfume.Data.Repository.OrderR
@@ -25,7 +26,7 @@ namespace TonightPerfume.Data.Repository.OrderR
 
         public IEnumerable<OrderProduct> Get()
         {
-            throw new NotImplementedException();
+            return _db.OrderProducts.Include(x => x.Price).Include(x => x.Order);
         }
 
         public Task<OrderProduct> GetById(uint id)
