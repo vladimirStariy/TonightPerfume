@@ -65,6 +65,7 @@ namespace TonightPerfume.API.Controllers
             return Ok(new ProfileTestDto() { response = "Success" });
         }
 
+        [AllowAnonymous]
         [HttpGet("order-product")]
         public async Task<IActionResult> GetOrderProducts(uint orderId)
         {

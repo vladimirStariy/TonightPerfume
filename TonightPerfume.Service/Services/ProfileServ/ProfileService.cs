@@ -92,18 +92,20 @@ namespace TonightPerfume.Service.Services.ProfileServ
             try
             {               
                 var orderProductsDto = new List<OrderProductDto>();
-                var orderProducts = _orderProductRepository.Get().Where(x => x.Order_ID == orderId);
-                foreach(var orderProduct in orderProducts)
+                var orderProducts = _orderProductRepository.Get().Where(x => x.Order_ID == orderId).ToList();
+                var products = _productRepository.Get().Where(x => orderProducts.Select(y => y.Price.Product_ID).Contains(x.Product_ID));
+
+                foreach (var orderProduct in orderProducts)
                 {
-                    OrderProductDto product = new OrderProductDto()
+                    OrderProductDto productDto = new OrderProductDto()
                     {
                         productId = orderProduct.Price.Product_ID,
                         quantity = orderProduct.Quantity,
-                        productBrand = orderProduct.Price.Product.Brand.Name,
-                        productName = orderProduct.Price.Product.Name,
+                        productBrand = products.Where(x => x.Product_ID == orderProduct.Price.Product_ID).Select(y => y.Brand.Name).FirstOrDefault(),
+                        productName = products.Where(x => x.Product_ID == orderProduct.Price.Product_ID).Select(y => y.Name).FirstOrDefault(),
                         price = orderProduct.Quantity * orderProduct.Price.Value
                     };
-                    orderProductsDto.Add(product);
+                    orderProductsDto.Add(productDto);
                 }
 
                 return new Response<List<OrderProductDto>>()

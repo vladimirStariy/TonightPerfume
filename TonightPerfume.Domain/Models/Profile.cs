@@ -12,6 +12,9 @@ namespace TonightPerfume.Domain.Models
 
         public DateTime? Birthday { get; set; }
 
+        public int AccumulativeDiscount { get; set; }
+        public int DiscountProgress { get; set; }
+
         public string? Email { get; set; }
         public string? Phone { get; set; }
 

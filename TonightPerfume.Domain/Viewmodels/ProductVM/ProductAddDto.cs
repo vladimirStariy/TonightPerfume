@@ -13,7 +13,7 @@ namespace TonightPerfume.Domain.Viewmodels.ProductVM
         public uint Brand_ID { get; set; }
         public uint Category_ID { get; set; }
 
-        //public ICollection<uint> AromaGroups { get; set; }
+        public ICollection<uint> AromaGroups { get; set; }
         public ICollection<uint> PerfumeNotes { get; set; }
         public ICollection<Price> Prices { get; set; }
     }

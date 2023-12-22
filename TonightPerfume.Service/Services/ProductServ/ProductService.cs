@@ -539,6 +539,7 @@ namespace TonightPerfume.Service.Services.ProductServ
                     Name = item.Name,
                     Brand = item.Brand.Name,
                     Price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value),
+                    Prices = prices.Where(x => x.Product_ID == item.Product_ID).ToList(),
                     isFavorite = true
                 };
 
