@@ -49,34 +49,39 @@ namespace TonightPerfume.Service.Services.ProductServ
                 var _notes = new List<PerfumeNote>();
                 var _aromaGroups = new List<AromaGroup>();
 
-                foreach (var item in model.PerfumeNotes)
-                {
-                    _notes.Add(await _perfumeNotesRepository.GetById(item));
-                }
+                foreach (var item in model.groups) { _aromaGroups.Add(await _aromaGroupRepository.GetById(item)); }
+                foreach (var item in model.upperNotes) { _notes.Add(await _perfumeNotesRepository.GetById(item)); }
+                foreach (var item in model.middleNotes) { _notes.Add(await _perfumeNotesRepository.GetById(item)); }
+                foreach (var item in model.bottomNotes) { _notes.Add(await _perfumeNotesRepository.GetById(item)); }
 
                 var newProduct = new Product()
                 {
-                    Name = model.Name,
-                    Description = model.Description,
-                    Brand_ID = model.Brand_ID,
-                    Category_ID = model.Category_ID,
-                    Year = model.Year,
-                    Country = model.Country,
-                    PerfumeNotes = _notes
+                    Name = model.name,
+                    Description = model.description,
+                    Brand_ID = model.brand,
+                    Category_ID = model.category,
+                    Year = model.year,
+                    Country = model.country,
+                    isPopular = model.isPopular,
+                    AromaGroups = _aromaGroups,
+                    PerfumeNotes = _notes,
                 };
 
                 await _productRepository.Create(newProduct);
 
                 foreach (var item in model.Prices)
                 {
-                    Price price = new Price()
+                    if(item.priceValue != 0)
                     {
-                        Product_ID = newProduct.Product_ID,
-                        Volume_ID = item.Volume_ID,
-                        Value = item.Value
-                    };
+                        Price price = new Price()
+                        {
+                            Product_ID = newProduct.Product_ID,
+                            Volume_ID = item.volumeId,
+                            Value = item.priceValue
+                        };
 
-                    await _priceRepository.Create(price);
+                        await _priceRepository.Create(price);
+                    }
                 }
 
                 return new Response<ProductAddDto>()
@@ -614,6 +619,66 @@ namespace TonightPerfume.Service.Services.ProductServ
             catch (Exception ex)
             {
                 return new Response<string>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<IBaseResponce<ProductPropertiesDto>> GetProductProperties()
+        {
+            try
+            {
+                var productPropertiesDto = new ProductPropertiesDto();
+                productPropertiesDto.categories = _categoryRepository.Get().ToList();
+                productPropertiesDto.perfumeNotes = _perfumeNotesRepository.Get().ToList();
+                productPropertiesDto.brands = _brandRepository.Get().ToList();
+                productPropertiesDto.aromaGroups = _aromaGroupRepository.Get().ToList();
+
+                return new Response<ProductPropertiesDto>()
+                {
+                    Result = productPropertiesDto,
+                    Description = "Успешно",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<ProductPropertiesDto>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<IBaseResponce<List<ProductTableDto>>> GetTableProducts()
+        {
+            try
+            {
+                var products = _productRepository.Get().ToList();
+                List<ProductTableDto> productsDto = new List<ProductTableDto>();
+                foreach(var product in products)
+                {
+                    var tableProductDto = new ProductTableDto();
+                    tableProductDto.productId = product.Product_ID;
+                    tableProductDto.name = product.Name;
+                    tableProductDto.brand = product.Brand.Name;
+                    tableProductDto.category = product.Category.Name;
+                    productsDto.Add(tableProductDto);
+                }
+
+                return new Response<List<ProductTableDto>>()
+                {
+                    Result = productsDto,
+                    Description = "Успешно",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<List<ProductTableDto>>()
                 {
                     StatusCode = StatusCode.InternalServerError,
                     Description = $"Внутренняя ошибка: {ex.Message}"

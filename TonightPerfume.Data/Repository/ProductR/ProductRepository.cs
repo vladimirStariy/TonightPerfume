@@ -30,6 +30,7 @@ namespace TonightPerfume.Data.Repository.ProductR
         {
             return _db.Products
                       .Include(x => x.Brand)
+                      .Include(x => x.Category)
                       .Include(x => x.PerfumeNotes);
         }
 

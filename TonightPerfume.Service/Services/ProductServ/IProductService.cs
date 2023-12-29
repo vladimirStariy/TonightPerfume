@@ -20,5 +20,7 @@ namespace TonightPerfume.Service.Services.ProductServ
         Task<IBaseResponce<string>> RemoveFavorite(uint product_id, string token);
         Task<IBaseResponce<List<countryvm>>> GetSortedCountries();
         Task<IBaseResponce<List<ProductCardDto>>> GetPopularProducts();
+        Task<IBaseResponce<ProductPropertiesDto>> GetProductProperties();
+        Task<IBaseResponce<List<ProductTableDto>>> GetTableProducts();
     }
 }

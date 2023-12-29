@@ -1,4 +1,5 @@
-﻿using TonightPerfume.Data.Repository.BaseRepository;
+﻿using Microsoft.EntityFrameworkCore;
+using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Domain.Models;
 
 namespace TonightPerfume.Data.Repository.ProductR
@@ -28,9 +29,9 @@ namespace TonightPerfume.Data.Repository.ProductR
             return _db.Brands;
         }
 
-        public Task<Brand> GetById(uint id)
+        public async Task<Brand> GetById(uint id)
         {
-            throw new NotImplementedException();
+            return await _db.Brands.Where(x => x.Brand_ID == id).FirstOrDefaultAsync();
         }
 
         public Task<Brand> Update(Brand model)

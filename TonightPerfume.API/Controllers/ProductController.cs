@@ -31,27 +31,10 @@ namespace TonightPerfume.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("product-cards-all")]
-        public async Task<ICollection<ProductCardDto>> Get()
+        [HttpGet("table-products")]
+        public async Task<ICollection<ProductTableDto>> Get()
         {
-            var response = await _productService.Get();
-            return response.Result;
-        }
-
-        [AllowAnonymous]
-        [HttpGet("product-cards")]
-        public async Task<ICollection<ProductCardDto>> GetWithPagination(int page)
-        {
-            var response = await _productService.GetProductsWithPagination(page);
- 
-            Response.Headers.Add("Access-Control-Expose-Headers", "X-Pages-Count, X-Pages-HasNext, X-Pages-HasPrevious, X-Pages-CurrentPage, X-Pages-TotalPages");
-
-            Response.Headers.Add("X-Pages-Count", JsonConvert.SerializeObject(response.Result.Count));
-            Response.Headers.Add("X-Pages-HasNext", JsonConvert.SerializeObject(response.Result.HasNext));
-            Response.Headers.Add("X-Pages-HasPrevious", JsonConvert.SerializeObject(response.Result.HasPrevious));
-            Response.Headers.Add("X-Pages-CurrentPage", JsonConvert.SerializeObject(response.Result.CurrentPage));
-            Response.Headers.Add("X-Pages-TotalPages", JsonConvert.SerializeObject(response.Result.TotalPages));
-
+            var response = await _productService.GetTableProducts();
             return response.Result;
         }
 
@@ -150,5 +133,12 @@ namespace TonightPerfume.API.Controllers
             return response.Result;
         }
 
+        [AllowAnonymous]
+        [HttpGet("product-properties")]
+        public async Task<ProductPropertiesDto> GetProductProperties()
+        {
+            var response = await _productService.GetProductProperties();
+            return response.Result;
+        }
     }
 }
