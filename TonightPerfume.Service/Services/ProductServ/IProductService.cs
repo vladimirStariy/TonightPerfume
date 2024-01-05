@@ -1,4 +1,5 @@
-﻿using TonightPerfume.Domain.Models;
+﻿using Microsoft.AspNetCore.Http;
+using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;
 using TonightPerfume.Domain.Utils;
 using TonightPerfume.Domain.Viewmodels.Filter;
@@ -9,12 +10,13 @@ namespace TonightPerfume.Service.Services.ProductServ
 {
     public interface IProductService
     {
-        Task<IBaseResponce<ProductAddDto>> Create(ProductAddDto model);
+        Task<IBaseResponce<ProductAddDto>> Create(IFormFile file, ProductAddDto model);
         Task<IBaseResponce<List<ProductCardDto>>> Get();
         Task<IBaseResponce<PagedList<ProductCardDto>>> GetProductsWithPagination(int page);
         Task<IBaseResponce<ProductDto>> GetById(uint id);
         Task<IBaseResponce<FilterDto>> GetFilter(int count);
         Task<IBaseResponce<PagedList<ProductCardDto>>> GetFilteredProductsWithPagination(FilterRequestDto model, string token);
+        Task<IBaseResponce<PagedList<ProductCardDto>>> GetFilteredProductsForOrderWithPagination(FilterRequestDto model, string token);
         Task<IBaseResponce<PagedList<ProductCardDto>>> GetFavorites(FavoriteRequestDto model);
         Task<IBaseResponce<string>> AddFavorite(uint product_id, string token);
         Task<IBaseResponce<string>> RemoveFavorite(uint product_id, string token);

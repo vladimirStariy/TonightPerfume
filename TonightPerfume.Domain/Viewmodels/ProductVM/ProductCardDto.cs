@@ -11,5 +11,6 @@ namespace TonightPerfume.Domain.Viewmodels.ProductVM
         public int Discount { get; set; }
         public List<Price> Prices { get; set; }
         public bool isFavorite { get; set; } = false;
+        public string imagePath { get; set; }
     }
 }

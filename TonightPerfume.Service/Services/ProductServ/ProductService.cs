@@ -1,4 +1,5 @@
-﻿using TonightPerfume.Data.Repository.BaseRepository;
+﻿using Microsoft.AspNetCore.Http;
+using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Domain.Enum;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;
@@ -42,7 +43,7 @@ namespace TonightPerfume.Service.Services.ProductServ
             _favoriteRepository = favoriteRepository;
         }
 
-        public async Task<IBaseResponce<ProductAddDto>> Create(ProductAddDto model)
+        public async Task<IBaseResponce<ProductAddDto>> Create(IFormFile file, ProductAddDto model)
         {
             try
             {
@@ -54,6 +55,18 @@ namespace TonightPerfume.Service.Services.ProductServ
                 foreach (var item in model.middleNotes) { _notes.Add(await _perfumeNotesRepository.GetById(item)); }
                 foreach (var item in model.bottomNotes) { _notes.Add(await _perfumeNotesRepository.GetById(item)); }
 
+                string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/SiteImages/Products");
+
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                FileInfo fileInfo = new FileInfo(file.FileName);
+                string fileNameWithPath = Path.Combine(path, file.FileName);
+                using (var stream = new FileStream(fileNameWithPath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                
                 var newProduct = new Product()
                 {
                     Name = model.name,
@@ -61,26 +74,30 @@ namespace TonightPerfume.Service.Services.ProductServ
                     Brand_ID = model.brand,
                     Category_ID = model.category,
                     Year = model.year,
+                    ImagePath = $"SiteImages/Products/{file.FileName}",
                     Country = model.country,
                     isPopular = model.isPopular,
+                    isForOrder = model.isForOrder,
                     AromaGroups = _aromaGroups,
                     PerfumeNotes = _notes,
                 };
 
                 await _productRepository.Create(newProduct);
 
-                foreach (var item in model.Prices)
+                if(!model.isForOrder)
                 {
-                    if(item.priceValue != 0)
+                    foreach (var item in model.Prices)
                     {
-                        Price price = new Price()
+                        if(item.priceValue != 0)
                         {
-                            Product_ID = newProduct.Product_ID,
-                            Volume_ID = item.volumeId,
-                            Value = item.priceValue
-                        };
-
-                        await _priceRepository.Create(price);
+                            Price price = new Price()
+                            {
+                                Product_ID = newProduct.Product_ID,
+                                Volume_ID = item.volumeId,
+                                Value = item.priceValue
+                            };
+                            await _priceRepository.Create(price);
+                        }
                     }
                 }
 
@@ -481,6 +498,7 @@ namespace TonightPerfume.Service.Services.ProductServ
                         Brand = item.Brand.Name,
                         Price = _price,
                         Prices = _prices,
+                        imagePath = item.ImagePath,
                         isFavorite = isFavorite,
                     };
 
@@ -492,6 +510,96 @@ namespace TonightPerfume.Service.Services.ProductServ
                     {
                         productDto.Discount = discounts.Where(x => x.Product_ID == item.Product_ID).Select(x => x.Value).FirstOrDefault();
                     }
+
+                    productCardDtos.Add(productDto);
+                }
+
+                var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.Page, 10);
+
+                return new Response<PagedList<ProductCardDto>>()
+                {
+                    Result = result,
+                    Description = "Успешно",
+                    StatusCode = StatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<PagedList<ProductCardDto>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<IBaseResponce<PagedList<ProductCardDto>>> GetFilteredProductsForOrderWithPagination(FilterRequestDto model, string token)
+        {
+            try
+            {
+                var perfumeNotes = new List<PerfumeNote>();
+
+                var products = _productRepository.Get().Where(x => x.isForOrder);
+
+                if (model.Brands.Count > 0)
+                {
+                    products = products.Where(x => model.Brands.Contains((int)x.Brand_ID));
+                }
+                if (model.Categories.Count > 0)
+                {
+                    products = products.Where(x => model.Categories.Contains((int)x.Category_ID));
+                }
+                if (model.PerfumeNotes.Count > 0)
+                {
+                    products = products.Where(x => x.PerfumeNotes.Any(y => model.PerfumeNotes.Contains((int)y.Note_ID)));
+                }
+                if (model.AromaGroups.Count > 0)
+                {
+                    products = products.Where(x => x.AromaGroups.Any(y => model.AromaGroups.Contains((int)y.AromaGroup_ID)));
+                }
+                if (model.Countries.Count > 0)
+                {
+                    products = products.Where(x => model.Countries.Contains(x.Country));
+                }
+
+                var filteredProducts = products.ToList();
+
+                if (!filteredProducts.Any())
+                {
+                    return new Response<PagedList<ProductCardDto>>()
+                    {
+                        Description = "Not found",
+                        StatusCode = StatusCode.OK
+                    };
+                }
+
+                var productCardDtos = new List<ProductCardDto>();
+
+                var discounts = _discountRepository.Get().ToList();
+
+                List<uint> favorites = new List<uint>();
+                if (token != null)
+                {
+                    var user_id = JwtTokens.GetPayloadUser(token);
+                    favorites = _favoriteRepository.Get().Where(x => x.User_ID == user_id).Select(x => x.Product_ID).ToList();
+                }
+                foreach (var item in filteredProducts)
+                {
+                    bool isFavorite = false;
+                    if (token != null)
+                    {
+                        if (favorites.Contains(item.Product_ID))
+                            isFavorite = true;
+                    }
+
+                    var productDto = new ProductCardDto()
+                    {
+                        Id = item.Product_ID,
+                        Name = item.Name,
+                        Brand = item.Brand.Name,
+                        imagePath = item.ImagePath,
+                        isFavorite = isFavorite,
+                    };
 
                     productCardDtos.Add(productDto);
                 }

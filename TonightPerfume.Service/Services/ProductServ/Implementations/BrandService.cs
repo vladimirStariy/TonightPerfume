@@ -1,4 +1,5 @@
-﻿using TonightPerfume.Data.Repository.BaseRepository;
+﻿using Microsoft.AspNetCore.Http;
+using TonightPerfume.Data.Repository.BaseRepository;
 using TonightPerfume.Domain.Enum;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Response;
@@ -15,11 +16,26 @@ namespace TonightPerfume.Service.Services.ProductServ.Implementations
             _brandRepository = brandRepository;
         }
 
-        public async Task<IBaseResponce<Brand>> Create(Brand model)
+        public async Task<IBaseResponce<Brand>> Create(IFormFile file, Brand model)
         {
             try
             {
+                string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/SiteImages/Brands");
+
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                FileInfo fileInfo = new FileInfo(file.FileName);
+                string fileNameWithPath = Path.Combine(path, file.FileName);
+                using (var stream = new FileStream(fileNameWithPath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                
+                model.ImagePath = $"SiteImages/Brands/{file.FileName}";
+
                 await _brandRepository.Create(model);
+                
                 return new Response<Brand>()
                 {
                     Result = model,

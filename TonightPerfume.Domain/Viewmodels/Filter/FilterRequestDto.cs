@@ -6,6 +6,7 @@ namespace TonightPerfume.Domain.Viewmodels.Filter
     public class FilterRequestDto
     {
         public int Page { get; set; }
+        public bool isForOrder { get; set; }
         public ICollection<int> Volumes { get; set; }
         public int[] Prices { get; set; }
         public ICollection<int> Brands { get; set; }

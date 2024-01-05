@@ -15,10 +15,11 @@
         public uint category { get; set; }
         public uint brand { get; set; }
         public bool isPopular { get; set; }
+        public bool isForOrder { get; set; }
         public ICollection<uint> groups { get; set; }
         public ICollection<uint> upperNotes { get; set; }
         public ICollection<uint> middleNotes { get; set; }
         public ICollection<uint> bottomNotes { get; set; }
-        public ICollection<PricesDto> Prices { get; set; }
+        public ICollection<PricesDto>? Prices { get; set; }
     }
 }

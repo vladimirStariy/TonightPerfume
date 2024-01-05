@@ -42,12 +42,10 @@ namespace TonightPerfume.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("create-brand")]
-        public async Task<Brand> Create(Brand model)
+        public async Task<Brand> Create([FromForm] IFormFile file, [FromForm] Brand model)
         {
-            var response = await _brandService.Create(model);
+            var response = await _brandService.Create(file, model);
             return response.Result;
         }
-
-
     }
 }

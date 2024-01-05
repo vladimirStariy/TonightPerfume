@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Any;
 using Newtonsoft.Json;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Domain.Security;
+using TonightPerfume.Domain.Utils;
 using TonightPerfume.Domain.Viewmodels.Filter;
 using TonightPerfume.Domain.Viewmodels.ProductVM;
 using TonightPerfume.Domain.Viewmodels.ProfileVM;
@@ -24,9 +26,19 @@ namespace TonightPerfume.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("create-product")]
-        public async Task<ProductAddDto> Create(ProductAddDto model)
+        public async Task<ProductAddDto> Create([FromForm] IFormFile file, [FromForm] ProductAddDto model)
         {
-            var response = await _productService.Create(model);
+            var prices = HttpContext.Request.Form.ToList().Where(x => 
+                x.Key.StartsWith("Prices")).Select(x => x.Value).ToList();
+
+            List<PricesDto> des_prices = new List<PricesDto>();
+            foreach(var price in prices)
+            {
+                var des_price = JsonDeserializer.DeserializePricesJson(price);    
+                des_prices.Add(des_price);
+            }
+            model.Prices = des_prices;
+            var response = await _productService.Create(file, model);
             return response.Result;
         }
 

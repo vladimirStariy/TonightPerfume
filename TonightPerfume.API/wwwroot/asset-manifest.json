@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.36e8837c.css",
-    "main.js": "/static/js/main.e309aff5.js",
+    "main.css": "/static/css/main.fc708da2.css",
+    "main.js": "/static/js/main.05332585.js",
     "static/media/Stock.png": "/static/media/Stock.87a60b3b343ca5222190.png",
     "static/media/ForClient.png": "/static/media/ForClient.d34b302e336590a3edb6.png",
     "static/media/4bm.png": "/static/media/4bm.9b861be18d0f2ba05886.png",
@@ -11,7 +11,7 @@
     "static/media/Slide1.png": "/static/media/Slide1.d760ef4b926aebad4a6c.png",
     "static/media/formOrder.png": "/static/media/formOrder.eba947c3837cba4a3836.png",
     "static/media/Catalogue.png": "/static/media/Catalogue.2608146f365bedf1c0e4.png",
-    "static/media/png": "/static/media/dc9b519edc4cfd1f69bee2ac15651c66.7a7445702693b4e5c2c9.png",
+    "static/media/png": "/static/media/796f6a6b37bd8558da5970af67f3e46c.0c1dce980a4264634e15.png",
     "static/media/Profile.png": "/static/media/Profile.53a5d4b5a61cd65d3b4e.png",
     "static/media/1sm.png": "/static/media/1sm.b80bb5d63d5d0ef29cf0.png",
     "static/media/advantages.png": "/static/media/advantages.45fad496ddcbb8f6dacf.png",
@@ -21,11 +21,11 @@
     "static/media/pos.png": "/static/media/pos.3c83932927251e54de34.png",
     "static/media/expresspay.png": "/static/media/expresspay.f5abf2626d5aef600ec0.png",
     "index.html": "/index.html",
-    "main.36e8837c.css.map": "/static/css/main.36e8837c.css.map",
-    "main.e309aff5.js.map": "/static/js/main.e309aff5.js.map"
+    "main.fc708da2.css.map": "/static/css/main.fc708da2.css.map",
+    "main.05332585.js.map": "/static/js/main.05332585.js.map"
   },
   "entrypoints": [
-    "static/css/main.36e8837c.css",
-    "static/js/main.e309aff5.js"
+    "static/css/main.fc708da2.css",
+    "static/js/main.05332585.js"
   ]
 }

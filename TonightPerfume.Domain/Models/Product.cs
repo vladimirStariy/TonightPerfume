@@ -19,6 +19,7 @@ namespace TonightPerfume.Domain.Models
         public bool isForOrder { get; set; } = false;
 
         public string ImagePath { get; set; } = "";
+        public string thumbImagePath { get; set; } = "";
 
         public string Description { get; set; }
 
