@@ -514,7 +514,7 @@ namespace TonightPerfume.Service.Services.ProductServ
                     productCardDtos.Add(productDto);
                 }
 
-                var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.Page, 10);
+                var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.Page, 24);
 
                 return new Response<PagedList<ProductCardDto>>()
                 {
