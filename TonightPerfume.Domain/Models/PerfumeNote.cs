@@ -6,9 +6,8 @@ namespace TonightPerfume.Domain.Models
     {
         public uint Note_ID { get; set; }
         public string Name { get; set; }
-        public string Type { get; set; }
 
         [JsonIgnore]
-        public virtual List<Product> Products { get; } = new List<Product>();
+        public virtual List<ProductNotes> ProductNotes { get; } = new List<ProductNotes>();
     }
 }

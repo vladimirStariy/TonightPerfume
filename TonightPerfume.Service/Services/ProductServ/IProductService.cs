@@ -11,7 +11,6 @@ namespace TonightPerfume.Service.Services.ProductServ
     public interface IProductService
     {
         Task<IBaseResponce<ProductAddDto>> Create(IFormFile file, ProductAddDto model);
-        Task<IBaseResponce<List<ProductCardDto>>> Get();
         Task<IBaseResponce<PagedList<ProductCardDto>>> GetProductsWithPagination(int page);
         Task<IBaseResponce<ProductDto>> GetById(uint id);
         Task<IBaseResponce<FilterDto>> GetFilter(int count);

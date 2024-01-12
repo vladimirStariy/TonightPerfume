@@ -21,6 +21,7 @@ namespace TonightPerfume.Service.Services.ProductServ
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<AromaGroup> _aromaGroupRepository;
         private readonly IRepository<Favorite> _favoriteRepository;
+        private readonly IRepository<ProductNotes> _productNotesRepository;
 
         public ProductService(
             IRepository<Product> productRepository,
@@ -30,7 +31,8 @@ namespace TonightPerfume.Service.Services.ProductServ
             IRepository<Brand> brandRepository,
             IRepository<Category> categoryRepository,
             IRepository<AromaGroup> aromaGroupRepository,
-            IRepository<Favorite> favoriteRepository
+            IRepository<Favorite> favoriteRepository,
+            IRepository<ProductNotes> productNotesRepository
         )
         {
             _productRepository = productRepository;
@@ -41,6 +43,7 @@ namespace TonightPerfume.Service.Services.ProductServ
             _categoryRepository = categoryRepository;
             _aromaGroupRepository = aromaGroupRepository;
             _favoriteRepository = favoriteRepository;
+            _productNotesRepository = productNotesRepository;
         }
 
         public async Task<IBaseResponce<ProductAddDto>> Create(IFormFile file, ProductAddDto model)
@@ -79,7 +82,7 @@ namespace TonightPerfume.Service.Services.ProductServ
                     isPopular = model.isPopular,
                     isForOrder = model.isForOrder,
                     AromaGroups = _aromaGroups,
-                    PerfumeNotes = _notes,
+                    
                 };
 
                 await _productRepository.Create(newProduct);
@@ -118,64 +121,6 @@ namespace TonightPerfume.Service.Services.ProductServ
             }
         }
 
-        public async Task<IBaseResponce<List<ProductCardDto>>> Get()
-        {
-            try
-            {
-                var products = _productRepository.Get();
-                var productCardDtos = new List<ProductCardDto>();
-                var prices = _priceRepository.Get();
-
-                if (!products.Any())
-                {
-                    return new Response<List<ProductCardDto>>()
-                    {
-                        Description = "Not found",
-                        StatusCode = StatusCode.OK
-                    };
-                }
-
-                var discounts = _discountRepository.Get().ToList();
-
-                foreach (var item in products)
-                {
-                    var productDto = new ProductCardDto()
-                    {
-                        Id = item.Product_ID,
-                        Name = item.Name,
-                        Brand = item.Brand.Name,
-                        Price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value)
-                    };
-
-                    if(!discounts.Any())
-                    {
-                        productDto.Discount = 0;
-                    }
-                    else
-                    {
-                        productDto.Discount = discounts.Where(x => x.Product_ID == item.Product_ID).Select(x => x.Value).FirstOrDefault();
-                    }
-
-                    productCardDtos.Add(productDto);
-                }
-
-                return new Response<List<ProductCardDto>>()
-                {
-                    Result = productCardDtos,
-                    Description = "Продукт добавлен",
-                    StatusCode = StatusCode.OK
-                };
-            }
-            catch (Exception ex)
-            {
-                return new Response<List<ProductCardDto>>()
-                {
-                    StatusCode = StatusCode.InternalServerError,
-                    Description = $"Внутренняя ошибка: {ex.Message}"
-                };
-            }
-        }
-
         public async Task<IBaseResponce<ProductDto>> GetById(uint id)
         {
             try
@@ -193,8 +138,7 @@ namespace TonightPerfume.Service.Services.ProductServ
                     Country = product.Country,
                     Year = product.Year,
                     Category = product.Category,
-                    
-                    PerfumeNotes = product.PerfumeNotes
+                    AromaGroups = product.AromaGroups
                 };
 
                 return new Response<ProductDto>()
@@ -424,7 +368,7 @@ namespace TonightPerfume.Service.Services.ProductServ
                 }
                 if (model.PerfumeNotes.Count > 0)
                 {
-                    products = products.Where(x => x.PerfumeNotes.Any(y => model.PerfumeNotes.Contains((int)y.Note_ID)));
+                    products = products.Where(x => x.ProductNotes.Any(y => model.PerfumeNotes.Contains((int)y.Note_ID)));
                 }
                 if (model.AromaGroups.Count > 0)
                 {
@@ -549,10 +493,10 @@ namespace TonightPerfume.Service.Services.ProductServ
                 {
                     products = products.Where(x => model.Categories.Contains((int)x.Category_ID));
                 }
-                if (model.PerfumeNotes.Count > 0)
-                {
-                    products = products.Where(x => x.PerfumeNotes.Any(y => model.PerfumeNotes.Contains((int)y.Note_ID)));
-                }
+                //if (model.PerfumeNotes.Count > 0)
+                //{
+                //    products = products.Where(x => x.PerfumeNotes.Any(y => model.PerfumeNotes.Contains((int)y.Note_ID)));
+                //}
                 if (model.AromaGroups.Count > 0)
                 {
                     products = products.Where(x => x.AromaGroups.Any(y => model.AromaGroups.Contains((int)y.AromaGroup_ID)));

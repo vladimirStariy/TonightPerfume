@@ -17,7 +17,6 @@ namespace TonightPerfume.Data.Repository.ProductR
         {
             await _db.Products.AddAsync(model);
             await _db.SaveChangesAsync();
-            
         }
 
         public async Task Delete(Product model)
@@ -31,14 +30,15 @@ namespace TonightPerfume.Data.Repository.ProductR
             return _db.Products
                       .Include(x => x.Brand)
                       .Include(x => x.Category)
-                      .Include(x => x.PerfumeNotes);
+                      .Include(x => x.ProductNotes);
         }
 
         public async Task<Product> GetById(uint id)
         {
             return await _db.Products
                             .Where(x => x.Product_ID == id)
-                            .Include(x => x.PerfumeNotes)
+                            .Include(x => x.AromaGroups)
+                            .Include(x => x.ProductNotes)
                             .Include(x => x.Category)
                             .Include(x => x.Brand)
                             .FirstOrDefaultAsync();

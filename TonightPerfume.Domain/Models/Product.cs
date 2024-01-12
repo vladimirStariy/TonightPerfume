@@ -30,7 +30,7 @@ namespace TonightPerfume.Domain.Models
         public virtual Brand Brand { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<PerfumeNote> PerfumeNotes { get; set; }
+        public virtual ICollection<ProductNotes> ProductNotes { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<AromaGroup> AromaGroups { get; set; }
