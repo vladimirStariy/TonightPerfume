@@ -127,6 +127,7 @@ namespace TonightPerfume.Service.Services.ProductServ
             {
                 var product = await _productRepository.GetById(id);
                 var prices = _priceRepository.Get().Where(x => x.Product_ID == id);
+                var notes = _productNotesRepository.Get().Where(x => x.Product_ID == id).ToList();
 
                 var productDto = new ProductDto()
                 {
@@ -138,7 +139,9 @@ namespace TonightPerfume.Service.Services.ProductServ
                     Country = product.Country,
                     Year = product.Year,
                     Category = product.Category,
-                    AromaGroups = product.AromaGroups
+                    AromaGroups = product.AromaGroups,
+                    PerfumeNotes = notes,
+                    ImagePath = product.ImagePath,
                 };
 
                 return new Response<ProductDto>()
@@ -317,7 +320,8 @@ namespace TonightPerfume.Service.Services.ProductServ
                         Name = item.Name,
                         Brand = item.Brand.Name,
                         Price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value),
-                        Prices = prices.Where(x => x.Product_ID == item.Product_ID).ToList()
+                        Prices = prices.Where(x => x.Product_ID == item.Product_ID).ToList(),
+                        imagePath = item.ImagePath
                     };
 
                     if (!discounts.Any())
@@ -458,7 +462,7 @@ namespace TonightPerfume.Service.Services.ProductServ
                     productCardDtos.Add(productDto);
                 }
 
-                var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.Page, 10);
+                var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.Page, 24);
 
                 return new Response<PagedList<ProductCardDto>>()
                 {
@@ -548,7 +552,7 @@ namespace TonightPerfume.Service.Services.ProductServ
                     productCardDtos.Add(productDto);
                 }
 
-                var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.Page, 10);
+                var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.Page, 24);
 
                 return new Response<PagedList<ProductCardDto>>()
                 {

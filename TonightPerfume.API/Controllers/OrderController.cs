@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TonightPerfume.Domain.Enum;
 using TonightPerfume.Domain.Viewmodels.OrderVM;
 using TonightPerfume.Service.Services.OrderServ;
 using TonightPerfume.Service.Services.ProductServ;
@@ -50,6 +51,10 @@ namespace TonightPerfume.API.Controllers
         public async Task<IActionResult> GetPromocodeData(PromocodeDto model)
         {
             var response = await _orderService.GetPromocodeData(model.promocode);
+            if(response.StatusCode == Domain.Enum.StatusCode.InternalServerError)
+            {
+                return NotFound("Invalid promocode");
+            }
             return Ok(response.Result);
         }
     }

@@ -26,7 +26,7 @@ namespace TonightPerfume.Data.Repository.ProductR
 
         public IEnumerable<ProductNotes> Get()
         {
-            return _db.ProductNotes;
+            return _db.ProductNotes.Include(x => x.PerfumeNote);
         }
 
         public async Task<ProductNotes> GetById(uint id)

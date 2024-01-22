@@ -14,6 +14,6 @@ namespace TonightPerfume.Domain.Viewmodels.ProductVM
         public Brand Brand { get; set; }
         public string ImagePath { get; set; }
         public ICollection<AromaGroup> AromaGroups { get; set; } = new List<AromaGroup>();
-        public ICollection<PerfumeNote> PerfumeNotes { get; set; } = new List<PerfumeNote>();
+        public ICollection<ProductNotes> PerfumeNotes { get; set; } = new List<ProductNotes>();
     }
 }
