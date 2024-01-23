@@ -88,7 +88,7 @@ namespace TonightPerfume.Service.Services.AccountServ
 
                 string url = $"{base_url}?user={SecurityConfig.SMS_LOGIN}" +
                                        $"&password={SecurityConfig.SMS_PASSWORD}" +
-                                       $"&recipient=298426400" +
+                                       $"&recipient={phone}" +
                                        $"&message={message}" +
                                        $"&sender={SecurityConfig.SMS_SENDER}";
                 

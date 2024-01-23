@@ -35,7 +35,6 @@ namespace TonightPerfume.API.Controllers
                 var response = await _orderService.CreateOrderAuthorized(model, token);
                 return Ok(response);
             }
-
         }
 
         [Authorize]
@@ -43,6 +42,10 @@ namespace TonightPerfume.API.Controllers
         public async Task<IActionResult> CreateOrderAuthorized(OrderRequestDto model)
         {
             var response = await _orderService.CreateOrderUnauthorized(model);
+            if(response.StatusCode == Domain.Enum.StatusCode.InternalServerError)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
 

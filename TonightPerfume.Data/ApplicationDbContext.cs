@@ -29,7 +29,7 @@ namespace TonightPerfume.Data
         public DbSet<Adress> Adresses { get; set; }
         public DbSet<Promocode> Promocodes { get; set; }
         public DbSet<ProductNotes> ProductNotes { get; set; }
-
+        public DbSet<Consultation> Consultations { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BaseUser>(builder =>
@@ -1144,6 +1144,12 @@ namespace TonightPerfume.Data
                         new AtomizerColor { AtomizerColor_ID = 29, Volume_ID = 5, Color = "red" },
                         new AtomizerColor { AtomizerColor_ID = 30, Volume_ID = 5, Color = "grey" },
                     });
+            });
+
+            modelBuilder.Entity<Consultation>(builder =>
+            {
+                builder.ToTable("Consultations").HasKey(x => x.Consultation_ID);
+                builder.Property(x => x.Consultation_ID).ValueGeneratedOnAdd();
             });
         }
     }

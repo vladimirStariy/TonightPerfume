@@ -1,4 +1,5 @@
 ﻿using TonightPerfume.Data.Repository.BaseRepository;
+using TonightPerfume.Data.Repository.Consult;
 using TonightPerfume.Data.Repository.DiscountR;
 using TonightPerfume.Data.Repository.OrderR;
 using TonightPerfume.Data.Repository.ProductR;
@@ -6,6 +7,7 @@ using TonightPerfume.Data.Repository.ProfileR;
 using TonightPerfume.Data.Repository.User;
 using TonightPerfume.Domain.Models;
 using TonightPerfume.Service.Services.AccountServ;
+using TonightPerfume.Service.Services.ConsultServ;
 using TonightPerfume.Service.Services.DiscountServ;
 using TonightPerfume.Service.Services.OrderServ;
 using TonightPerfume.Service.Services.ProductServ;
@@ -37,6 +39,7 @@ namespace TonightPerfume.API
             services.AddScoped<IRepository<Promocode>, PromocodeRepository>();
             services.AddScoped<IRepository<AtomizerColor>, AtomizerColorRepository>();
             services.AddScoped<IRepository<ProductNotes>, ProductNoteRepository>();
+            services.AddScoped<IRepository<Consultation>, ConsultationRepository>();
         }
 
         public static void InitializeServices(this IServiceCollection services)
@@ -51,6 +54,7 @@ namespace TonightPerfume.API
             services.AddScoped<IAromaGroupService, AromaGroupService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ProfileService>();
+            services.AddScoped<IConsultationService, ConsultationService>();
         }
     }
 }

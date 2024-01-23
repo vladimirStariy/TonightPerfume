@@ -462,6 +462,20 @@ namespace TonightPerfume.Service.Services.ProductServ
                     productCardDtos.Add(productDto);
                 }
 
+                if(model.sortType == "alph")
+                {
+                    productCardDtos = productCardDtos.OrderBy(x => x.Name).ToList();
+                }
+                if(model.sortType == "priceASC")
+                {
+                    productCardDtos = productCardDtos.OrderBy(x => x.Price).ToList();
+                }
+                if(model.sortType == "priceDESC")
+                {
+                    productCardDtos = productCardDtos.OrderByDescending(x => x.Price).ToList();
+                }
+
+
                 var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.Page, 24);
 
                 return new Response<PagedList<ProductCardDto>>()

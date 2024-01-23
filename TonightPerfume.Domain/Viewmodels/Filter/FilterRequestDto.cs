@@ -14,5 +14,6 @@ namespace TonightPerfume.Domain.Viewmodels.Filter
         public ICollection<int> Categories { get; set; }
         public ICollection<int> PerfumeNotes { get; set; }
         public ICollection<string> Countries { get; set; }
+        public string sortType { get; set; }
     }
 }
