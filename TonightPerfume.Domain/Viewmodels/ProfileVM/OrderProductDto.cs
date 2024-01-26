@@ -7,5 +7,6 @@
         public int quantity { get; set; }
         public string productName { get; set; }
         public string productBrand { get; set; }
+        public string image { get; set; }
     }
 }

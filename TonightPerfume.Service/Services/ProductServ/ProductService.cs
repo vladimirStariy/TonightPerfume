@@ -357,133 +357,228 @@ namespace TonightPerfume.Service.Services.ProductServ
         {
             try
             {
-                var perfumeNotes = new List<PerfumeNote>();
-                var prices = new List<Price>();
+                if(!model.isForOrder)
+                {
+                    var perfumeNotes = new List<PerfumeNote>();
+                    var prices = new List<Price>();
 
-                var products = _productRepository.Get();
+                    var products = _productRepository.Get().Where(x => x.isForOrder == false);
 
-                if (model.Brands.Count > 0)
-                {
-                    products = products.Where(x => model.Brands.Contains((int)x.Brand_ID));
-                }
-                if (model.Categories.Count > 0)
-                {
-                    products = products.Where(x => model.Categories.Contains((int)x.Category_ID));
-                }
-                if (model.PerfumeNotes.Count > 0)
-                {
-                    products = products.Where(x => x.ProductNotes.Any(y => model.PerfumeNotes.Contains((int)y.Note_ID)));
-                }
-                if (model.AromaGroups.Count > 0)
-                {
-                    products = products.Where(x => x.AromaGroups.Any(y => model.AromaGroups.Contains((int)y.AromaGroup_ID)));
-                }
-                if (model.Countries.Count > 0)
-                {
-                    products = products.Where(x => model.Countries.Contains(x.Country));
-                }
-                if (model.Prices.Length > 0)
-                {
-                    prices = _priceRepository.Get().Where(x => x.Value >= model.Prices[0] && x.Value <= model.Prices[1]).ToList();
-                    if(model.Volumes.Count > 0)
+                    if (model.Brands.Count > 0)
                     {
-                        prices = prices.Where(x => model.Volumes.Contains(x.Volume.Value)).ToList();
+                        products = products.Where(x => model.Brands.Contains((int)x.Brand_ID));
                     }
-                    products = products.Where(x => prices.Any(y => x.Product_ID == y.Product_ID));
+                    if (model.Categories.Count > 0)
+                    {
+                        products = products.Where(x => model.Categories.Contains((int)x.Category_ID));
+                    }
+                    if (model.PerfumeNotes.Count > 0)
+                    {
+                        products = products.Where(x => x.ProductNotes.Any(y => model.PerfumeNotes.Contains((int)y.Note_ID)));
+                    }
+                    if (model.AromaGroups.Count > 0)
+                    {
+                        products = products.Where(x => x.AromaGroups.Any(y => model.AromaGroups.Contains((int)y.AromaGroup_ID)));
+                    }
+                    if (model.Countries.Count > 0)
+                    {
+                        products = products.Where(x => model.Countries.Contains(x.Country));
+                    }
+                    if (model.Prices.Length > 0)
+                    {
+                        prices = _priceRepository.Get().Where(x => x.Value >= model.Prices[0] && x.Value <= model.Prices[1]).ToList();
+                        if(model.Volumes.Count > 0)
+                        {
+                            prices = prices.Where(x => model.Volumes.Contains(x.Volume.Value)).ToList();
+                        }
+                        products = products.Where(x => prices.Any(y => x.Product_ID == y.Product_ID));
+                    } 
+                    else
+                    {
+                        prices =_priceRepository.Get().ToList();
+                    }
+
+                    var filteredProducts = products.ToList();
+
+                    if (!filteredProducts.Any())
+                    {
+                        return new Response<PagedList<ProductCardDto>>()
+                        {
+                            Description = "Not found",
+                            StatusCode = StatusCode.OK
+                        };
+                    }
+
+                    var productCardDtos = new List<ProductCardDto>();
+
+                    var discounts = _discountRepository.Get().ToList();
+
+                    List<uint> favorites = new List<uint>();
+                    if (token != null)
+                    {
+                        var user_id = JwtTokens.GetPayloadUser(token);
+                        favorites = _favoriteRepository.Get().Where(x => x.User_ID == user_id).Select(x => x.Product_ID).ToList();
+                    }
+                    foreach (var item in filteredProducts)
+                    {
+                        var _price = 0;
+                        List<Price> _prices = null;
+                        try
+                        {
+                            _price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value);
+                            _prices = prices.Where(x => x.Product_ID == item.Product_ID).ToList();
+                        }
+                        catch
+                        {
+                            _prices = null;
+                            _price = 0;
+                        }
+
+                        bool isFavorite = false;
+                        if(token != null)
+                        {
+                            if(favorites.Contains(item.Product_ID))
+                                isFavorite = true;
+                        }
+
+                        var productDto = new ProductCardDto()
+                        {
+                            Id = item.Product_ID,
+                            Name = item.Name,
+                            Brand = item.Brand.Name,
+                            Price = _price,
+                            Prices = _prices,
+                            imagePath = item.ImagePath,
+                            isFavorite = isFavorite,
+                            
+                        };
+
+                        if (!discounts.Any())
+                        {
+                            productDto.Discount = 0;
+                        }
+                        else
+                        {
+                            productDto.Discount = discounts.Where(x => x.Product_ID == item.Product_ID).Select(x => x.Value).FirstOrDefault();
+                        }
+
+                        productCardDtos.Add(productDto);
+                    }
+
+                    if(model.sortType == "alph")
+                    {
+                        productCardDtos = productCardDtos.OrderBy(x => x.Name).ToList();
+                    }
+                    if(model.sortType == "priceASC")
+                    {
+                        productCardDtos = productCardDtos.OrderBy(x => x.Price).ToList();
+                    }
+                    if(model.sortType == "priceDESC")
+                    {
+                        productCardDtos = productCardDtos.OrderByDescending(x => x.Price).ToList();
+                    }
+
+                    var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.Page, 24);
+
+                    return new Response<PagedList<ProductCardDto>>()
+                    {
+                        Result = result,
+                        Description = "Успешно",
+                        StatusCode = StatusCode.OK
+                    };
                 } 
                 else
                 {
-                    prices =_priceRepository.Get().ToList();
-                }
+                    var perfumeNotes = new List<PerfumeNote>();
 
-                var filteredProducts = products.ToList();
+                    var products = _productRepository.Get().Where(x => x.isForOrder == true);
 
-                if (!filteredProducts.Any())
-                {
+                    if (model.Brands.Count > 0)
+                    {
+                        products = products.Where(x => model.Brands.Contains((int)x.Brand_ID));
+                    }
+                    if (model.Categories.Count > 0)
+                    {
+                        products = products.Where(x => model.Categories.Contains((int)x.Category_ID));
+                    }
+                    if (model.PerfumeNotes.Count > 0)
+                    {
+                        products = products.Where(x => x.ProductNotes.Any(y => model.PerfumeNotes.Contains((int)y.Note_ID)));
+                    }
+                    if (model.AromaGroups.Count > 0)
+                    {
+                        products = products.Where(x => x.AromaGroups.Any(y => model.AromaGroups.Contains((int)y.AromaGroup_ID)));
+                    }
+                    if (model.Countries.Count > 0)
+                    {
+                        products = products.Where(x => model.Countries.Contains(x.Country));
+                    }
+
+                    var filteredProducts = products.ToList();
+
+                    if (!filteredProducts.Any())
+                    {
+                        return new Response<PagedList<ProductCardDto>>()
+                        {
+                            Description = "Not found",
+                            StatusCode = StatusCode.OK
+                        };
+                    }
+
+                    var productCardDtos = new List<ProductCardDto>();
+
+                    var discounts = _discountRepository.Get().ToList();
+
+                    List<uint> favorites = new List<uint>();
+                    if (token != null)
+                    {
+                        var user_id = JwtTokens.GetPayloadUser(token);
+                        favorites = _favoriteRepository.Get().Where(x => x.User_ID == user_id).Select(x => x.Product_ID).ToList();
+                    }
+                    foreach (var item in filteredProducts)
+                    {
+                        bool isFavorite = false;
+                        if (token != null)
+                        {
+                            if (favorites.Contains(item.Product_ID))
+                                isFavorite = true;
+                        }
+
+                        var productDto = new ProductCardDto()
+                        {
+                            Id = item.Product_ID,
+                            Name = item.Name,
+                            Brand = item.Brand.Name,
+                            imagePath = item.ImagePath,
+                            isFavorite = isFavorite,
+                            isForOrder = true
+                        };
+
+                        productCardDtos.Add(productDto);
+                    }
+
+                    if (model.sortType == "alph")
+                    {
+                        productCardDtos = productCardDtos.OrderBy(x => x.Name).ToList();
+                    }
+                    if (model.sortType == "priceASC")
+                    {
+                        productCardDtos = productCardDtos.OrderBy(x => x.Price).ToList();
+                    }
+                    if (model.sortType == "priceDESC")
+                    {
+                        productCardDtos = productCardDtos.OrderByDescending(x => x.Price).ToList();
+                    }
+
+                    var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.Page, 24);
+
                     return new Response<PagedList<ProductCardDto>>()
                     {
-                        Description = "Not found",
+                        Result = result,
+                        Description = "Успешно",
                         StatusCode = StatusCode.OK
                     };
                 }
-
-                var productCardDtos = new List<ProductCardDto>();
-
-                var discounts = _discountRepository.Get().ToList();
-
-                List<uint> favorites = new List<uint>();
-                if (token != null)
-                {
-                    var user_id = JwtTokens.GetPayloadUser(token);
-                    favorites = _favoriteRepository.Get().Where(x => x.User_ID == user_id).Select(x => x.Product_ID).ToList();
-                }
-                foreach (var item in filteredProducts)
-                {
-                    var _price = 0;
-                    List<Price> _prices = null;
-                    try
-                    {
-                        _price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value);
-                        _prices = prices.Where(x => x.Product_ID == item.Product_ID).ToList();
-                    }
-                    catch
-                    {
-                        _prices = null;
-                        _price = 0;
-                    }
-
-                    bool isFavorite = false;
-                    if(token != null)
-                    {
-                        if(favorites.Contains(item.Product_ID))
-                            isFavorite = true;
-                    }
-
-                    var productDto = new ProductCardDto()
-                    {
-                        Id = item.Product_ID,
-                        Name = item.Name,
-                        Brand = item.Brand.Name,
-                        Price = _price,
-                        Prices = _prices,
-                        imagePath = item.ImagePath,
-                        isFavorite = isFavorite,
-                    };
-
-                    if (!discounts.Any())
-                    {
-                        productDto.Discount = 0;
-                    }
-                    else
-                    {
-                        productDto.Discount = discounts.Where(x => x.Product_ID == item.Product_ID).Select(x => x.Value).FirstOrDefault();
-                    }
-
-                    productCardDtos.Add(productDto);
-                }
-
-                if(model.sortType == "alph")
-                {
-                    productCardDtos = productCardDtos.OrderBy(x => x.Name).ToList();
-                }
-                if(model.sortType == "priceASC")
-                {
-                    productCardDtos = productCardDtos.OrderBy(x => x.Price).ToList();
-                }
-                if(model.sortType == "priceDESC")
-                {
-                    productCardDtos = productCardDtos.OrderByDescending(x => x.Price).ToList();
-                }
-
-
-                var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.Page, 24);
-
-                return new Response<PagedList<ProductCardDto>>()
-                {
-                    Result = result,
-                    Description = "Успешно",
-                    StatusCode = StatusCode.OK
-                };
             }
             catch (Exception ex)
             {
@@ -613,24 +708,33 @@ namespace TonightPerfume.Service.Services.ProductServ
                     Id = item.Product_ID,
                     Name = item.Name,
                     Brand = item.Brand.Name,
-                    Price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value),
-                    Prices = prices.Where(x => x.Product_ID == item.Product_ID).ToList(),
-                    isFavorite = true
+                    isFavorite = true,
+                    isForOrder = item.isForOrder,
+                    imagePath = item.ImagePath
                 };
 
-                if (!discounts.Any())
+                if(!item.isForOrder)
                 {
-                    productDto.Discount = 0;
+                    productDto.Price = prices.Where(x => x.Product_ID == item.Product_ID).Min(x => x.Value);
+                    productDto.Prices = prices.Where(x => x.Product_ID == item.Product_ID).ToList();
                 }
-                else
+
+                if(!item.isForOrder)
                 {
-                    productDto.Discount = discounts.Where(x => x.Product_ID == item.Product_ID).Select(x => x.Value).FirstOrDefault();
+                    if (!discounts.Any())
+                    {
+                        productDto.Discount = 0;
+                    }
+                    else
+                    {
+                        productDto.Discount = discounts.Where(x => x.Product_ID == item.Product_ID).Select(x => x.Value).FirstOrDefault();
+                    }
                 }
 
                 productCardDtos.Add(productDto);
             }
 
-            var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.page, 10);
+            var result = PagedList<ProductCardDto>.ToPagedList(productCardDtos, model.page, 24);
 
             return new Response<PagedList<ProductCardDto>>()
             {

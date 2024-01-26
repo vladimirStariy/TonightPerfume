@@ -103,7 +103,8 @@ namespace TonightPerfume.Service.Services.ProfileServ
                         quantity = orderProduct.Quantity,
                         productBrand = products.Where(x => x.Product_ID == orderProduct.Price.Product_ID).Select(y => y.Brand.Name).FirstOrDefault(),
                         productName = products.Where(x => x.Product_ID == orderProduct.Price.Product_ID).Select(y => y.Name).FirstOrDefault(),
-                        price = orderProduct.Quantity * orderProduct.Price.Value
+                        price = orderProduct.Quantity * orderProduct.Price.Value,
+                        image = products.Where(x => x.Product_ID == orderProduct.Price.Product_ID).Select(y => y.ImagePath).FirstOrDefault()
                     };
                     orderProductsDto.Add(productDto);
                 }
@@ -266,6 +267,8 @@ namespace TonightPerfume.Service.Services.ProfileServ
                 profileData.Birthday = profile.Birthday;
                 profileData.Email = profile.Email;
                 profileData.Phone = profile.Phone;
+                profileData.AccumulativeDiscount = profile.AccumulativeDiscount;
+                profileData.DiscountProgress = profile.DiscountProgress;
 
                 return new Response<ProfileDataDto>()
                 {

@@ -8,6 +8,8 @@
         public DateTime? Birthday { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }
+        public int AccumulativeDiscount { get; set; }
+        public int DiscountProgress { get; set; }
 
         public List<ProfileAdressDto> ProfileAdresses { get; set; } = new List<ProfileAdressDto>();
     }

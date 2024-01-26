@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using TonightPerfume.Domain.Viewmodels.ConsultationVM;
 using TonightPerfume.Service.Services.AccountServ;
 using TonightPerfume.Service.Services.ConsultServ;
@@ -27,7 +28,7 @@ namespace TonightPerfume.API.Controllers
             {
                 return BadRequest(response.Result);
             }
-            return Ok(response.Result);
+            return Ok(JsonSerializer.Serialize(response.Result));
         }
     }
 }
